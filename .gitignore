@@ -11,3 +11,5 @@ dist
 .claude/settings.json
 .claude/scheduled_tasks.lock
 .claude/*.lock
+
+.vercel
