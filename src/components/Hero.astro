@@ -25,7 +25,7 @@ import Particles from "./Particles.astro";
 
   <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full text-center">
-      <h1 class="reveal font-display font-semibold text-bone text-[clamp(2.5rem,9vw,9.5rem)] leading-[0.85] tracking-[-0.04em]">
+      <h1 class="reveal font-display font-semibold text-bone text-[clamp(3.25rem,17vw,9.5rem)] leading-[0.85] tracking-[-0.04em]">
         <span class="block">Tworzymy</span>
         <span class="word-rotator" aria-label="viralowe, wirusowe, milionowe, kosmiczne">
           <span class="word-rotator-track">
@@ -40,13 +40,13 @@ import Particles from "./Particles.astro";
       </h1>
 
       <div
-        class="mt-10 lg:mt-14 flex flex-wrap items-center justify-center gap-5 lg:gap-6 reveal"
+        class="mt-10 lg:mt-14 flex flex-col sm:flex-row items-center justify-center gap-5 lg:gap-6 reveal"
         style="animation-delay:0.3s"
       >
         <a
           href="mailto:biuro@chaosmedia.pl"
           data-cursor="invert"
-          class="group inline-flex items-center gap-3 bg-acid text-ink px-6 py-3.5 lg:px-7 lg:py-4 font-display font-bold text-base lg:text-lg uppercase tracking-[0.04em] hover:gap-5 transition-all"
+          class="group inline-flex items-center gap-3 bg-acid text-ink px-6 py-3.5 lg:px-7 lg:py-4 font-display font-bold text-base lg:text-lg uppercase tracking-[0.04em] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_-12px_rgba(230,255,0,0.55)] hover:bg-[#f0ff2e]"
         >
           Stwórzmy viral
           <span aria-hidden="true">→</span>
@@ -63,9 +63,36 @@ import Particles from "./Particles.astro";
 
   <!-- subtle scroll cue, anchored to bottom -->
   <div class="relative z-10 pb-6 lg:pb-8 flex justify-center pointer-events-none">
-    <div class="flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-bone/40">
-      <span>Scroll</span>
-      <span class="inline-block w-px h-6 bg-bone/30"></span>
+    <div class="flex flex-col items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-bone/40">
+      <svg
+        class="w-5 h-8 text-bone/50"
+        viewBox="0 0 24 38"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <rect x="1.5" y="1.5" width="21" height="35" rx="10.5" />
+        <line x1="12" y1="8" x2="12" y2="14" class="mouse-wheel" />
+      </svg>
+      <span>Przewiń</span>
     </div>
   </div>
+
+  <style is:global>
+    @keyframes mouse-wheel-drop {
+      0% { transform: translateY(0); opacity: 0; }
+      30% { opacity: 1; }
+      80% { transform: translateY(6px); opacity: 0; }
+      100% { transform: translateY(6px); opacity: 0; }
+    }
+    .mouse-wheel {
+      animation: mouse-wheel-drop 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      transform-origin: center;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mouse-wheel { animation: none; }
+    }
+  </style>
 </section>
