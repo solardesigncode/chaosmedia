@@ -1,0 +1,356 @@
+---
+interface Props {
+  count?: number;
+  magnetRadius?: number;
+  ringRadius?: number;
+  waveSpeed?: number;
+  waveAmplitude?: number;
+  particleSize?: number;
+  lerpSpeed?: number;
+  color?: string;
+  autoAnimate?: boolean;
+  particleVariance?: number;
+  rotationSpeed?: number;
+  depthFactor?: number;
+  pulseSpeed?: number;
+  particleShape?: "capsule" | "sphere" | "box" | "tetrahedron";
+  fieldStrength?: number;
+  opacity?: number;
+  class?: string;
+}
+
+const {
+  count = 300,
+  magnetRadius = 10,
+  ringRadius = 10,
+  waveSpeed = 0.4,
+  waveAmplitude = 1,
+  particleSize = 2,
+  lerpSpeed = 0.1,
+  color = "#FF9FFC",
+  autoAnimate = false,
+  particleVariance = 1,
+  rotationSpeed = 0,
+  depthFactor = 1,
+  pulseSpeed = 3,
+  particleShape = "capsule",
+  fieldStrength = 10,
+  opacity = 1,
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    "antigravity absolute inset-0 overflow-hidden pointer-events-none",
+    className,
+  ]}
+  data-count={String(count)}
+  data-magnet-radius={String(magnetRadius)}
+  data-ring-radius={String(ringRadius)}
+  data-wave-speed={String(waveSpeed)}
+  data-wave-amplitude={String(waveAmplitude)}
+  data-particle-size={String(particleSize)}
+  data-lerp-speed={String(lerpSpeed)}
+  data-color={color}
+  data-auto-animate={autoAnimate ? "true" : "false"}
+  data-particle-variance={String(particleVariance)}
+  data-rotation-speed={String(rotationSpeed)}
+  data-depth-factor={String(depthFactor)}
+  data-pulse-speed={String(pulseSpeed)}
+  data-particle-shape={particleShape}
+  data-field-strength={String(fieldStrength)}
+  data-opacity={String(opacity)}
+  aria-hidden="true"
+>
+</div>
+
+<script>
+  import * as THREE from "three";
+
+  type Particle = {
+    t: number;
+    factor: number;
+    speed: number;
+    xFactor: number;
+    yFactor: number;
+    zFactor: number;
+    mx: number;
+    my: number;
+    mz: number;
+    cx: number;
+    cy: number;
+    cz: number;
+    vx: number;
+    vy: number;
+    vz: number;
+    randomRadiusOffset: number;
+  };
+
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  const makeGeometry = (shape: string): THREE.BufferGeometry => {
+    switch (shape) {
+      case "sphere":
+        return new THREE.SphereGeometry(0.2, 16, 16);
+      case "box":
+        return new THREE.BoxGeometry(0.3, 0.3, 0.3);
+      case "tetrahedron":
+        return new THREE.TetrahedronGeometry(0.3);
+      case "capsule":
+      default:
+        return new THREE.CapsuleGeometry(0.1, 0.4, 4, 8);
+    }
+  };
+
+  const viewportAtZ = (
+    camera: THREE.PerspectiveCamera,
+    targetZ = 0
+  ): { width: number; height: number } => {
+    const dist = camera.position.z - targetZ;
+    const vFov = (camera.fov * Math.PI) / 180;
+    const height = 2 * Math.tan(vFov / 2) * Math.abs(dist);
+    const width = height * camera.aspect;
+    return { width, height };
+  };
+
+  document.querySelectorAll<HTMLElement>(".antigravity").forEach((container) => {
+    const count = parseInt(container.dataset.count ?? "300", 10);
+    const magnetRadius = parseFloat(container.dataset.magnetRadius ?? "10");
+    const ringRadius = parseFloat(container.dataset.ringRadius ?? "10");
+    const waveSpeed = parseFloat(container.dataset.waveSpeed ?? "0.4");
+    const waveAmplitude = parseFloat(container.dataset.waveAmplitude ?? "1");
+    const particleSize = parseFloat(container.dataset.particleSize ?? "2");
+    const lerpSpeed = parseFloat(container.dataset.lerpSpeed ?? "0.1");
+    const color = container.dataset.color ?? "#FF9FFC";
+    const autoAnimate = container.dataset.autoAnimate === "true";
+    const particleVariance = parseFloat(
+      container.dataset.particleVariance ?? "1"
+    );
+    const rotationSpeed = parseFloat(container.dataset.rotationSpeed ?? "0");
+    const depthFactor = parseFloat(container.dataset.depthFactor ?? "1");
+    const pulseSpeed = parseFloat(container.dataset.pulseSpeed ?? "3");
+    const particleShape = container.dataset.particleShape ?? "capsule";
+    const fieldStrength = parseFloat(container.dataset.fieldStrength ?? "10");
+    const opacity = parseFloat(container.dataset.opacity ?? "1");
+
+    // --- scene setup ---
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const canvas = renderer.domElement;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
+    container.appendChild(canvas);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 1000);
+    camera.position.set(0, 0, 50);
+
+    const geometry = makeGeometry(particleShape);
+    const material = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(color),
+      transparent: opacity < 1,
+      opacity,
+    });
+    const mesh = new THREE.InstancedMesh(geometry, material, count);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    scene.add(mesh);
+
+    const dummy = new THREE.Object3D();
+
+    // --- init particles — viewport dependent, re-run on resize ---
+    let particles: Particle[] = [];
+    let viewportW = 0;
+    let viewportH = 0;
+
+    const initParticles = () => {
+      const vp = viewportAtZ(camera, 0);
+      viewportW = vp.width;
+      viewportH = vp.height;
+      const next: Particle[] = [];
+      for (let i = 0; i < count; i++) {
+        const x = (Math.random() - 0.5) * viewportW;
+        const y = (Math.random() - 0.5) * viewportH;
+        const z = (Math.random() - 0.5) * 20;
+        next.push({
+          t: Math.random() * 100,
+          factor: 20 + Math.random() * 100,
+          speed: 0.01 + Math.random() / 200,
+          xFactor: -50 + Math.random() * 100,
+          yFactor: -50 + Math.random() * 100,
+          zFactor: -50 + Math.random() * 100,
+          mx: x,
+          my: y,
+          mz: z,
+          cx: x,
+          cy: y,
+          cz: z,
+          vx: 0,
+          vy: 0,
+          vz: 0,
+          randomRadiusOffset: (Math.random() - 0.5) * 2,
+        });
+      }
+      particles = next;
+    };
+
+    const resize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      initParticles();
+    };
+    resize();
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(container);
+
+    // --- mouse tracking: normalized -1..1 across container ---
+    const pointer = { x: 0, y: 0 };
+    const lastMousePos = { x: 0, y: 0 };
+    let lastMouseMoveTime = 0;
+    const virtualMouse = { x: 0, y: 0 };
+
+    const onPointerMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    };
+
+    const parent = container.parentElement;
+    (parent ?? window).addEventListener(
+      "mousemove",
+      onPointerMove as EventListener,
+      { passive: true }
+    );
+
+    // --- animation loop ---
+    const clockStart = performance.now();
+    let rafId = 0;
+
+    const loop = () => {
+      const elapsed = (performance.now() - clockStart) / 1000;
+
+      const mouseDist = Math.sqrt(
+        Math.pow(pointer.x - lastMousePos.x, 2) +
+          Math.pow(pointer.y - lastMousePos.y, 2)
+      );
+      if (mouseDist > 0.001) {
+        lastMouseMoveTime = Date.now();
+        lastMousePos.x = pointer.x;
+        lastMousePos.y = pointer.y;
+      }
+
+      let destX = (pointer.x * viewportW) / 2;
+      let destY = (pointer.y * viewportH) / 2;
+
+      if (autoAnimate && Date.now() - lastMouseMoveTime > 2000) {
+        destX = Math.sin(elapsed * 0.5) * (viewportW / 4);
+        destY = Math.cos(elapsed * 0.5 * 2) * (viewportH / 4);
+      }
+
+      const smoothFactor = 0.05;
+      virtualMouse.x += (destX - virtualMouse.x) * smoothFactor;
+      virtualMouse.y += (destY - virtualMouse.y) * smoothFactor;
+
+      const targetX = virtualMouse.x;
+      const targetY = virtualMouse.y;
+
+      const globalRotation = elapsed * rotationSpeed;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.t += p.speed / 2;
+        const t = p.t;
+
+        const projectionFactor = 1 - p.cz / 50;
+        const projectedTargetX = targetX * projectionFactor;
+        const projectedTargetY = targetY * projectionFactor;
+
+        const dx = p.mx - projectedTargetX;
+        const dy = p.my - projectedTargetY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        let tgtX = p.mx;
+        let tgtY = p.my;
+        let tgtZ = p.mz * depthFactor;
+
+        if (dist < magnetRadius) {
+          const angle = Math.atan2(dy, dx) + globalRotation;
+          const wave = Math.sin(t * waveSpeed + angle) * (0.5 * waveAmplitude);
+          const deviation = p.randomRadiusOffset * (5 / (fieldStrength + 0.1));
+          // Normalise ring size by particle depth so near-camera particles
+          // don't orbit with a visually larger (and therefore more dynamic)
+          // ring than far particles. projectionFactor = 1 - cz/50.
+          const currentRingRadius =
+            (ringRadius + wave + deviation) * projectionFactor;
+
+          tgtX = projectedTargetX + currentRingRadius * Math.cos(angle);
+          tgtY = projectedTargetY + currentRingRadius * Math.sin(angle);
+          tgtZ =
+            p.mz * depthFactor +
+            Math.sin(t) * (1 * waveAmplitude * depthFactor);
+        }
+
+        p.cx += (tgtX - p.cx) * lerpSpeed;
+        p.cy += (tgtY - p.cy) * lerpSpeed;
+        p.cz += (tgtZ - p.cz) * lerpSpeed;
+
+        dummy.position.set(p.cx, p.cy, p.cz);
+        dummy.lookAt(projectedTargetX, projectedTargetY, p.cz);
+        dummy.rotateX(Math.PI / 2);
+
+        const currentDistToMouse = Math.sqrt(
+          Math.pow(p.cx - projectedTargetX, 2) +
+            Math.pow(p.cy - projectedTargetY, 2)
+        );
+        const distFromRing = Math.abs(currentDistToMouse - ringRadius);
+        let scaleFactor = 1 - distFromRing / 10;
+        if (scaleFactor < 0) scaleFactor = 0;
+        if (scaleFactor > 1) scaleFactor = 1;
+
+        const finalScale =
+          scaleFactor *
+          (0.8 + Math.sin(t * pulseSpeed) * 0.2 * particleVariance) *
+          particleSize;
+        dummy.scale.set(finalScale, finalScale, finalScale);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+      }
+
+      mesh.instanceMatrix.needsUpdate = true;
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(loop);
+    };
+
+    if (reduceMotion) {
+      // Single static frame
+      renderer.render(scene, camera);
+    } else {
+      rafId = requestAnimationFrame(loop);
+    }
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        ro.disconnect();
+        geometry.dispose();
+        material.dispose();
+        mesh.dispose();
+        renderer.dispose();
+      },
+      { once: true }
+    );
+  });
+</script>

@@ -1,22 +1,31 @@
 ---
-import DarkVeil from "./DarkVeil.astro";
+import Antigravity from "./Antigravity.astro";
 ---
 
 <section
   id="top"
   class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden bg-ink"
 >
-  <DarkVeil
-    hueShift={180}
-    noiseIntensity={0.05}
-    scanlineIntensity={0}
-    speed={1.2}
-    scanlineFrequency={0}
-    warpAmount={0.7}
-    resolutionScale={1}
+  <Antigravity
+    count={300}
+    magnetRadius={2}
+    ringRadius={25}
+    waveSpeed={0.25}
+    waveAmplitude={0.5}
+    particleSize={2}
+    lerpSpeed={0.04}
+    color="#b8c866"
+    opacity={0.55}
+    autoAnimate={false}
+    particleVariance={0.3}
+    rotationSpeed={0}
+    depthFactor={0.05}
+    pulseSpeed={1.5}
+    particleShape="capsule"
+    fieldStrength={10}
   />
-  <!-- headline legibility: moderate dark wash to keep H1 readable over the shader -->
-  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/70 via-ink/40 to-ink/60"></div>
+  <!-- subtle wash to keep H1 legible over the particle field -->
+  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/50 via-transparent to-ink/40"></div>
 
   <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full text-center">
@@ -40,6 +49,7 @@ import DarkVeil from "./DarkVeil.astro";
       >
         <a
           href="mailto:biuro@chaosmedia.pl"
+          data-cursor="invert"
           class="group inline-flex items-center gap-3 bg-acid text-ink px-6 py-3.5 lg:px-7 lg:py-4 font-display font-bold text-base lg:text-lg uppercase tracking-[0.04em] hover:gap-5 transition-all"
         >
           Stwórzmy viral

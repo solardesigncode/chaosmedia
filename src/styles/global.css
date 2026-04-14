@@ -44,6 +44,9 @@
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Always reserve scrollbar gutter so hiding body overflow (e.g. menu open)
+       doesn't cause horizontal layout shift. */
+    scrollbar-gutter: stable;
   }
 
   body {
