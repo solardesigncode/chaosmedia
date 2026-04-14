@@ -1,22 +1,26 @@
 ---
-import GradientBars from "./GradientBars.astro";
+import DarkVeil from "./DarkVeil.astro";
 ---
 
 <section
   id="top"
   class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden bg-ink"
 >
-  <GradientBars
-    numBars={13}
-    animationDuration={3.2}
-    gradientFrom="rgba(230, 255, 0, 0.42)"
+  <DarkVeil
+    hueShift={180}
+    noiseIntensity={0.05}
+    scanlineIntensity={0}
+    speed={1.2}
+    scanlineFrequency={0}
+    warpAmount={0.7}
+    resolutionScale={1}
   />
-  <!-- darken the top of the hero so headline stays legible against the bars -->
-  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink via-ink/80 to-ink/10"></div>
+  <!-- headline legibility: moderate dark wash to keep H1 readable over the shader -->
+  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/70 via-ink/40 to-ink/60"></div>
 
   <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
-    <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full">
-      <h1 class="reveal font-display font-semibold text-bone text-[clamp(2.5rem,8.5vw,8.25rem)] leading-[0.85] tracking-[-0.04em]">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full text-center">
+      <h1 class="reveal font-display font-semibold text-bone text-[clamp(2.5rem,9vw,9.5rem)] leading-[0.85] tracking-[-0.04em]">
         <span class="block">Tworzymy</span>
         <span class="word-rotator" aria-label="viralowe, wirusowe, milionowe, kosmiczne">
           <span class="word-rotator-track">
@@ -30,40 +34,23 @@ import GradientBars from "./GradientBars.astro";
         <span class="block">treści<span class="text-acid">.</span></span>
       </h1>
 
-      <div class="mt-10 lg:mt-14 grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
-        <div
-          class="lg:col-span-7 flex flex-wrap items-center gap-5 lg:gap-6 reveal"
-          style="animation-delay:0.3s"
+      <div
+        class="mt-10 lg:mt-14 flex flex-wrap items-center justify-center gap-5 lg:gap-6 reveal"
+        style="animation-delay:0.3s"
+      >
+        <a
+          href="mailto:biuro@chaosmedia.pl"
+          class="group inline-flex items-center gap-3 bg-acid text-ink px-6 py-3.5 lg:px-7 lg:py-4 font-display font-bold text-base lg:text-lg uppercase tracking-[0.04em] hover:gap-5 transition-all"
         >
-          <a
-            href="mailto:biuro@chaosmedia.pl"
-            class="group inline-flex items-center gap-3 bg-acid text-ink px-6 py-3.5 lg:px-7 lg:py-4 font-display font-bold text-base lg:text-lg uppercase tracking-[0.04em] hover:gap-5 transition-all"
-          >
-            Stwórzmy viral
-            <span aria-hidden="true">→</span>
-          </a>
-          <a
-            href="#co-robimy"
-            class="text-xs lg:text-sm uppercase tracking-[0.18em] text-bone/60 hover:text-bone transition-colors underline-offset-4 hover:underline"
-          >
-            Zobacz co robimy
-          </a>
-        </div>
-        <div class="lg:col-span-5 lg:col-start-8 max-w-xl">
-          <div
-            class="flex items-center gap-3 text-xs uppercase tracking-[0.32em] text-bone/60 reveal mb-4"
-            style="animation-delay:0.1s"
-          >
-            <span class="inline-block w-8 h-px bg-acid"></span>
-            Chaos Media — agencja viralowa
-          </div>
-          <p
-            class="text-base lg:text-lg text-bone/70 reveal"
-            style="animation-delay:0.15s"
-          >
-            Łączymy media, sport i internet w jedną potężną machinę zasięgów. Własne portale, własne studio, własne formaty — i dystrybucja, której zazdroszczą najwięksi.
-          </p>
-        </div>
+          Stwórzmy viral
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="#co-robimy"
+          class="text-xs lg:text-sm uppercase tracking-[0.18em] text-bone/60 hover:text-bone transition-colors underline-offset-4 hover:underline"
+        >
+          Zobacz co robimy
+        </a>
       </div>
     </div>
   </div>

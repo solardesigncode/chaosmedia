@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
 @import "@fontsource-variable/archivo";
-@import "@fontsource/instrument-serif/400.css";
-@import "@fontsource/instrument-serif/400-italic.css";
 
 @font-face {
   font-family: "Clash Display";
@@ -29,7 +27,6 @@
 @theme {
   --font-display: "Clash Display", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
 
   --color-ink: #0a0a0a;
   --color-bone: #f5f5f2;
@@ -95,11 +92,10 @@
     display: block;
     height: 0.85em;
     line-height: 0.85;
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 400;
+    font-family: var(--font-display);
+    font-weight: 600;
     color: var(--color-acid);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
   }
   @keyframes rotate-words {
     0%, 16%   { transform: translateY(0); }
@@ -112,13 +108,9 @@
     .word-rotator-track { animation: none; }
   }
 
-  /* editorial italic accent — real italic glyphs from Instrument Serif */
-  .accent-italic {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    font-feature-settings: "liga", "calt";
+  /* accent: headline words highlighted in acid yellow (inherits Clash Display) */
+  .accent-acid {
+    color: var(--color-acid);
   }
 
   .ticker {

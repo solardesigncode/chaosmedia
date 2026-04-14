@@ -1,0 +1,169 @@
+---
+interface Props {
+  colors?: string[];
+  size?: number;
+  blur?: number;
+  smoothing?: number;
+  ambient?: boolean;
+  opacity?: number;
+  class?: string;
+}
+
+const {
+  colors = [
+    "rgba(230, 255, 0, 0.38)",
+    "rgba(150, 200, 20, 0.28)",
+  ],
+  size = 520,
+  blur = 80,
+  smoothing = 0.1,
+  ambient = true,
+  opacity = 1,
+  class: className = "",
+} = Astro.props;
+
+const colorsJson = JSON.stringify(colors);
+---
+
+<div
+  class:list={[
+    "spotlight-bg absolute inset-0 overflow-hidden pointer-events-none",
+    className,
+  ]}
+  data-colors={colorsJson}
+  data-size={String(size)}
+  data-blur={String(blur)}
+  data-smoothing={String(smoothing)}
+  data-ambient={ambient ? "true" : "false"}
+  data-opacity={String(opacity)}
+  aria-hidden="true"
+>
+  {colors.map((_, i) => (
+    <div
+      class="spotlight-layer absolute inset-0"
+      data-index={i}
+      style={`opacity: ${opacity}; filter: blur(${blur}px);`}
+    />
+  ))}
+
+  <div
+    class="absolute inset-0 opacity-40"
+    style="background: radial-gradient(ellipse at 50% 50%, rgba(230, 255, 0, 0.06) 0%, transparent 70%);"
+  >
+  </div>
+  <div
+    class="absolute inset-0"
+    style="background: radial-gradient(ellipse at center, transparent 0%, transparent 45%, rgba(10, 10, 10, 0.75) 100%);"
+  >
+  </div>
+</div>
+
+<script>
+  type Pos = { x: number; y: number; targetX: number; targetY: number };
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  document.querySelectorAll<HTMLElement>(".spotlight-bg").forEach((container) => {
+    let colors: string[];
+    try {
+      colors = JSON.parse(container.dataset.colors ?? "[]");
+    } catch {
+      colors = [];
+    }
+    if (!colors.length) return;
+
+    const size = parseFloat(container.dataset.size ?? "500");
+    const smoothing = parseFloat(container.dataset.smoothing ?? "0.1");
+    const ambient = container.dataset.ambient === "true";
+
+    const layers = Array.from(
+      container.querySelectorAll<HTMLElement>(".spotlight-layer")
+    );
+
+    const initialRect = container.getBoundingClientRect();
+    const spotlights: Pos[] = colors.map((_, i) => {
+      const offset = (i - (colors.length - 1) / 2) * 50;
+      return {
+        x: initialRect.width / 2 + offset,
+        y: initialRect.height / 2,
+        targetX: initialRect.width / 2 + offset,
+        targetY: initialRect.height / 2,
+      };
+    });
+
+    let lastMove = 0;
+    let tick = 0;
+    let rafId = 0;
+
+    const render = () => {
+      spotlights.forEach((s, i) => {
+        const layer = layers[i];
+        if (!layer) return;
+        layer.style.background = `radial-gradient(${size}px circle at ${s.x}px ${s.y}px, ${colors[i]}, transparent 70%)`;
+      });
+    };
+
+    const loop = () => {
+      tick++;
+      const r = container.getBoundingClientRect();
+      const isAmbient = ambient && Date.now() - lastMove > 2000;
+
+      spotlights.forEach((s, i) => {
+        if (isAmbient) {
+          const offset = i * 0.5;
+          s.targetX =
+            r.width / 2 + Math.sin(tick * 0.005 + offset) * (r.width * 0.22);
+          s.targetY =
+            r.height / 2 + Math.cos(tick * 0.003 + offset) * (r.height * 0.18);
+        }
+        s.x = lerp(s.x, s.targetX, smoothing);
+        s.y = lerp(s.y, s.targetY, smoothing);
+      });
+
+      render();
+      rafId = requestAnimationFrame(loop);
+    };
+
+    if (reduceMotion) {
+      render();
+    } else {
+      rafId = requestAnimationFrame(loop);
+    }
+
+    // Mouse + touch tracking on parent section (container is pointer-events:none)
+    const parent = container.parentElement;
+    if (parent && !reduceMotion) {
+      const handlePointer = (clientX: number, clientY: number) => {
+        const r = container.getBoundingClientRect();
+        const x = clientX - r.left;
+        const y = clientY - r.top;
+        lastMove = Date.now();
+        spotlights.forEach((s, i) => {
+          s.targetX = x + (i - (colors.length - 1) / 2) * 30;
+          s.targetY = y + (i - (colors.length - 1) / 2) * 20;
+        });
+      };
+      parent.addEventListener(
+        "mousemove",
+        (e) => handlePointer(e.clientX, e.clientY),
+        { passive: true }
+      );
+      parent.addEventListener(
+        "touchmove",
+        (e) => {
+          const t = e.touches[0];
+          if (t) handlePointer(t.clientX, t.clientY);
+        },
+        { passive: true }
+      );
+    }
+
+    window.addEventListener(
+      "pagehide",
+      () => cancelAnimationFrame(rafId),
+      { once: true }
+    );
+  });
+</script>

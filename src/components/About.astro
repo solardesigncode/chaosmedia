@@ -16,60 +16,61 @@ const media: Media[] = [
   { name: "typowykibic.pl", logo: "/logos/portals/typowykibic.svg", href: "https://typowykibic.pl" },
   { name: "niewiarygodnemiejsca.pl", logo: "/logos/portals/niewiarygodnemiejsca.avif", href: "https://niewiarygodnemiejsca.pl", raster: true },
 ];
+
+// Duplicate the list so the marquee seamlessly loops (track animates -50%)
+const loop = [...media, ...media];
 ---
 
 <section id="media" class="py-28 lg:py-40">
-  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 grid lg:grid-cols-12 gap-12 lg:gap-20">
-    <div class="lg:col-span-5">
-      <div class="text-xs uppercase tracking-[0.32em] text-bone/50">01 — O nas</div>
-      <h2 class="mt-6 font-display font-semibold text-bone text-6xl lg:text-7xl">Kim jesteśmy</h2>
-      <p class="mt-8 text-lg text-bone/70 leading-relaxed">
-        Chaos Media to agencja, która specjalizuje się w tworzeniu viralowych treści w social mediach. Posiadamy własne media, studio nagrań oraz zespoły reporterskie działające w całej Polsce.
-      </p>
-      <p class="mt-4 text-sm text-bone/40 uppercase tracking-[0.18em]">
-        Własna dystrybucja · Własny content · Własne marki
-      </p>
-    </div>
-
-    <div class="lg:col-span-7">
-      <div class="flex items-baseline justify-between mb-6">
-        <div class="text-xs uppercase tracking-[0.32em] text-bone/50">Nasze portale</div>
-        <div class="text-xs tracking-[0.18em] text-bone/30 tabular-nums">{media.length} / media</div>
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 mb-16 lg:mb-24">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20">
+      <div class="lg:col-span-5">
+        <div class="text-xs uppercase tracking-[0.32em] text-bone/50">01 — O nas</div>
+        <h2 class="mt-6 font-display font-semibold text-bone text-6xl lg:text-7xl">Kim jesteśmy</h2>
       </div>
-      <ul class="grid grid-cols-2 sm:grid-cols-3 gap-3 lg:gap-4">
-        {media.map((m, i) => (
-          <li>
-            <a
-              href={m.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="portal-card group relative block border border-white/10 bg-smoke hover:border-acid hover:bg-ink transition-all aspect-[5/3] flex flex-col items-center justify-center p-5 overflow-hidden"
-            >
-              <img
-                src={m.logo}
-                alt={`Logo ${m.name}`}
-                loading="lazy"
-                decoding="async"
-                class:list={[
-                  "portal-logo max-h-9 lg:max-h-11 max-w-[78%] object-contain transition-all duration-500",
-                  m.raster ? "portal-logo--raster" : "",
-                ]}
-              />
-              <span class="absolute bottom-2.5 inset-x-3 text-center text-[10px] uppercase tracking-[0.18em] text-bone/45 group-hover:text-acid transition-colors">
-                {m.name}
-              </span>
-              <span class="absolute top-2 left-2 text-[9px] tabular-nums text-bone/25">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span
-                class="absolute top-2 right-2 text-acid text-xs opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
-                aria-hidden="true"
-              >↗</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div class="lg:col-span-6 lg:col-start-7">
+        <p class="text-lg text-bone/70 leading-relaxed">
+          Chaos Media to agencja, która specjalizuje się w tworzeniu viralowych treści w social mediach. Posiadamy własne media, studio nagrań oraz zespoły reporterskie działające w całej Polsce.
+        </p>
+        <p class="mt-4 text-sm text-bone/40 uppercase tracking-[0.18em]">
+          Własna dystrybucja · Własny content · Własne marki
+        </p>
+      </div>
     </div>
+  </div>
+
+  <div class="mb-6 lg:mb-8 max-w-[1400px] mx-auto px-6 lg:px-10 flex items-baseline justify-between">
+    <div class="text-xs uppercase tracking-[0.32em] text-bone/50">Nasze portale</div>
+    <div class="text-xs tracking-[0.18em] text-bone/30 tabular-nums">{media.length} / media</div>
+  </div>
+
+  <div class="portal-ticker relative overflow-hidden">
+    <div class="portal-ticker-track flex items-center gap-14 lg:gap-20 py-4 lg:py-6 whitespace-nowrap will-change-transform">
+      {loop.map((m, i) => (
+        <a
+          href={m.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-hidden={i >= media.length ? "true" : undefined}
+          tabindex={i >= media.length ? -1 : undefined}
+          class="portal-logo-link group shrink-0 flex items-center"
+          title={m.name}
+        >
+          <img
+            src={m.logo}
+            alt={`Logo ${m.name}`}
+            loading="lazy"
+            decoding="async"
+            class:list={[
+              "portal-logo h-8 lg:h-10 w-auto max-w-[180px] lg:max-w-[220px] object-contain transition-all duration-500",
+              m.raster ? "portal-logo--raster" : "",
+            ]}
+          />
+        </a>
+      ))}
+    </div>
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-ink to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-ink to-transparent"></div>
   </div>
 </section>
 
@@ -79,13 +80,25 @@ const media: Media[] = [
   .portal-logo--raster {
     filter: brightness(0) invert(1);
   }
-  .portal-card:hover .portal-logo {
-    transform: scale(1.03);
+  .portal-logo-link .portal-logo {
+    opacity: 0.6;
   }
-  .portal-card .portal-logo {
-    opacity: 0.85;
-  }
-  .portal-card:hover .portal-logo {
+  .portal-logo-link:hover .portal-logo {
     opacity: 1;
+    transform: scale(1.05);
+  }
+
+  .portal-ticker-track {
+    animation: portal-ticker 50s linear infinite;
+  }
+  .portal-ticker:hover .portal-ticker-track {
+    animation-play-state: paused;
+  }
+  @keyframes portal-ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portal-ticker-track { animation: none; }
   }
 </style>

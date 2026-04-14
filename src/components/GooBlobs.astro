@@ -1,0 +1,320 @@
+---
+interface Props {
+  gradientBackgroundStart?: string;
+  gradientBackgroundEnd?: string;
+  firstColor?: string;
+  secondColor?: string;
+  thirdColor?: string;
+  fourthColor?: string;
+  fifthColor?: string;
+  pointerColor?: string;
+  size?: string;
+  blendingValue?: string;
+  interactive?: boolean;
+  class?: string;
+}
+
+const {
+  gradientBackgroundStart = "#0a0a0a",
+  gradientBackgroundEnd = "#1a1a22",
+  firstColor = "230, 255, 0",
+  secondColor = "180, 200, 30",
+  thirdColor = "115, 140, 20",
+  fourthColor = "60, 80, 15",
+  fifthColor = "200, 222, 40",
+  pointerColor = "230, 255, 0",
+  size = "80%",
+  blendingValue = "hard-light",
+  interactive = true,
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    "goo-bg absolute inset-0 overflow-hidden pointer-events-none",
+    className,
+  ]}
+  style={`background: linear-gradient(40deg, ${gradientBackgroundStart}, ${gradientBackgroundEnd});`}
+  aria-hidden="true"
+>
+  <svg class="hidden" aria-hidden="true">
+    <defs>
+      <filter id="cm-goo-filter">
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
+        <feColorMatrix
+          in="blur"
+          mode="matrix"
+          result="goo"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
+        ></feColorMatrix>
+        <feBlend in="SourceGraphic" in2="goo"></feBlend>
+      </filter>
+    </defs>
+  </svg>
+
+  <div
+    class="goo-blobs absolute inset-0"
+    style="filter: url(#cm-goo-filter) blur(40px);"
+  >
+    <div
+      class="goo-blob blob-1"
+      style={`
+        --blob-size: ${size};
+        --blob-color: ${firstColor};
+        mix-blend-mode: ${blendingValue};
+      `}
+    >
+    </div>
+    <div
+      class="goo-blob blob-2"
+      style={`
+        --blob-size: ${size};
+        --blob-color: ${secondColor};
+        mix-blend-mode: ${blendingValue};
+      `}
+    >
+    </div>
+    <div
+      class="goo-blob blob-3"
+      style={`
+        --blob-size: ${size};
+        --blob-color: ${thirdColor};
+        mix-blend-mode: ${blendingValue};
+      `}
+    >
+    </div>
+    <div
+      class="goo-blob blob-4"
+      style={`
+        --blob-size: ${size};
+        --blob-color: ${fourthColor};
+        mix-blend-mode: ${blendingValue};
+      `}
+    >
+    </div>
+    <div
+      class="goo-blob blob-5"
+      style={`
+        --blob-size: ${size};
+        --blob-color: ${fifthColor};
+        mix-blend-mode: ${blendingValue};
+      `}
+    >
+    </div>
+    {interactive && (
+      <div
+        class="goo-pointer absolute w-full h-full -top-1/2 -left-1/2 opacity-70"
+        style={`
+          background: radial-gradient(circle at center, rgba(${pointerColor}, 0.8) 0%, transparent 50%);
+          mix-blend-mode: ${blendingValue};
+        `}
+      />
+    )}
+  </div>
+</div>
+
+<style is:global>
+  @property --gb-rot {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  @property --gb-tx {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+  @property --gb-ty {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+  @property --gb-scl {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+  }
+
+  .goo-blob {
+    position: absolute;
+    width: var(--blob-size);
+    height: var(--blob-size);
+    top: calc(50% - var(--blob-size) / 2);
+    left: calc(50% - var(--blob-size) / 2);
+    border-radius: 9999px;
+    transform: rotate(var(--gb-rot)) translate(var(--gb-tx), var(--gb-ty))
+      scale(var(--gb-scl));
+    will-change: transform;
+  }
+
+  .goo-blob.blob-1 {
+    background: radial-gradient(
+      circle at center,
+      rgb(var(--blob-color)) 0%,
+      rgb(var(--blob-color)) 50%,
+      transparent 50%
+    );
+    transform-origin: center center;
+    animation: gb-rot-pos 20s linear infinite,
+      gb-scale-pulse 8s ease-in-out infinite;
+  }
+
+  .goo-blob.blob-2 {
+    background: radial-gradient(
+      circle at center,
+      rgba(var(--blob-color), 0.8) 0%,
+      transparent 50%
+    );
+    opacity: 0.8;
+    transform-origin: calc(50% - 400px) center;
+    animation: gb-rot-neg 15s linear infinite,
+      gb2-x 12s ease-in-out infinite,
+      gb2-y 10s ease-in-out infinite;
+  }
+
+  .goo-blob.blob-3 {
+    background: radial-gradient(
+      circle at center,
+      rgba(var(--blob-color), 0.8) 0%,
+      transparent 50%
+    );
+    opacity: 0.8;
+    transform-origin: calc(50% + 400px) center;
+    animation: gb-rot-pos 25s linear infinite,
+      gb3-x 14s ease-in-out infinite,
+      gb3-y 16s ease-in-out infinite;
+  }
+
+  .goo-blob.blob-4 {
+    background: radial-gradient(
+      circle at center,
+      rgba(var(--blob-color), 0.8) 0%,
+      transparent 50%
+    );
+    opacity: 0.7;
+    transform-origin: calc(50% - 200px) center;
+    animation: gb-rot-neg 18s linear infinite,
+      gb4-x 20s ease-in-out infinite,
+      gb4-y 14s ease-in-out infinite;
+  }
+
+  .goo-blob.blob-5 {
+    background: radial-gradient(
+      circle at center,
+      rgba(var(--blob-color), 0.8) 0%,
+      transparent 50%
+    );
+    opacity: 0.8;
+    transform-origin: calc(50% - 800px) calc(50% + 800px);
+    animation: gb-rot-pos 22s linear infinite,
+      gb5-x 18s ease-in-out infinite,
+      gb5-y 12s ease-in-out infinite;
+  }
+
+  @keyframes gb-rot-pos {
+    to { --gb-rot: 360deg; }
+  }
+  @keyframes gb-rot-neg {
+    to { --gb-rot: -360deg; }
+  }
+  @keyframes gb-scale-pulse {
+    0%, 100% { --gb-scl: 1; }
+    50% { --gb-scl: 1.1; }
+  }
+  @keyframes gb2-x {
+    0%, 100% { --gb-tx: 0px; }
+    33% { --gb-tx: 100px; }
+    66% { --gb-tx: -50px; }
+  }
+  @keyframes gb2-y {
+    0%, 100% { --gb-ty: 0px; }
+    33% { --gb-ty: -80px; }
+    66% { --gb-ty: 60px; }
+  }
+  @keyframes gb3-x {
+    0%, 100% { --gb-tx: 0px; }
+    33% { --gb-tx: -120px; }
+    66% { --gb-tx: 80px; }
+  }
+  @keyframes gb3-y {
+    0%, 100% { --gb-ty: 0px; }
+    33% { --gb-ty: 100px; }
+    66% { --gb-ty: -40px; }
+  }
+  @keyframes gb4-x {
+    0%, 100% { --gb-tx: 0px; }
+    33% { --gb-tx: 60px; }
+    66% { --gb-tx: -100px; }
+  }
+  @keyframes gb4-y {
+    0%, 100% { --gb-ty: 0px; }
+    33% { --gb-ty: -60px; }
+    66% { --gb-ty: 80px; }
+  }
+  @keyframes gb5-x {
+    0%, 100% { --gb-tx: 0px; }
+    33% { --gb-tx: -80px; }
+    66% { --gb-tx: 120px; }
+  }
+  @keyframes gb5-y {
+    0%, 100% { --gb-ty: 0px; }
+    33% { --gb-ty: 120px; }
+    66% { --gb-ty: -60px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .goo-blob,
+    .goo-pointer {
+      animation: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Interactive pointer: smoothed mouse-follow via lerp + rAF
+  document.querySelectorAll<HTMLElement>(".goo-bg").forEach((container) => {
+    const pointer = container.querySelector<HTMLElement>(".goo-pointer");
+    if (!pointer) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (reduceMotion) return;
+
+    let curX = 0;
+    let curY = 0;
+    let tgX = 0;
+    let tgY = 0;
+    let rafId = 0;
+
+    const tick = () => {
+      curX += (tgX - curX) / 20;
+      curY += (tgY - curY) / 20;
+      pointer.style.transform = `translate(${Math.round(curX)}px, ${Math.round(curY)}px)`;
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+
+    // Listen on the parent section (container has pointer-events:none)
+    const parent = container.parentElement;
+    if (parent) {
+      parent.addEventListener(
+        "mousemove",
+        (e) => {
+          const rect = container.getBoundingClientRect();
+          tgX = e.clientX - rect.left;
+          tgY = e.clientY - rect.top;
+        },
+        { passive: true }
+      );
+    }
+
+    window.addEventListener(
+      "pagehide",
+      () => cancelAnimationFrame(rafId),
+      { once: true }
+    );
+  });
+</script>
