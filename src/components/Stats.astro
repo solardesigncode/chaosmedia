@@ -36,19 +36,33 @@ const initialValue = (s: (typeof stats)[number]) =>
 
 <section class="border-y border-white/10 bg-smoke">
   <div class="max-w-[1400px] mx-auto">
-    <div class="px-6 lg:px-10 pt-24 lg:pt-36 pb-16 lg:pb-28">
-      <div class="flex items-center gap-3 text-xs uppercase tracking-[0.32em] text-acid mb-10 lg:mb-14">
-        <span class="inline-block w-8 h-px bg-acid"></span>
-        Chaos Media w liczbach
+    <div class="px-6 lg:px-10 pt-24 lg:pt-36 relative grid lg:grid-cols-12 gap-10 lg:gap-12 items-end">
+      <div class="lg:col-span-7 relative z-10 pb-16 lg:pb-28">
+        <div class="flex items-center gap-3 text-xs uppercase tracking-[0.32em] text-acid mb-10 lg:mb-14">
+          <span class="inline-block w-8 h-px bg-acid"></span>
+          Chaos Media w liczbach
+        </div>
+
+        <h2 class="font-display font-semibold text-bone text-[clamp(1.75rem,5vw,5rem)] leading-[1] tracking-[-0.025em] max-w-[22ch] text-balance">
+          Łączymy <span class="text-acid">media</span>, <span class="text-acid">sport</span> <span class="whitespace-nowrap">i&nbsp;<span class="text-acid">internet</span></span> w jedną potężną machinę zasięgów.
+        </h2>
+
+        <p class="mt-10 lg:mt-14 text-base lg:text-xl text-bone/65 max-w-2xl leading-relaxed">
+          Własne portale, własne studio, własne formaty — i dystrybucja, której zazdroszczą najwięksi.
+        </p>
       </div>
 
-      <h2 class="font-display font-semibold text-bone text-[clamp(1.75rem,5vw,5rem)] leading-[1] tracking-[-0.025em] max-w-[22ch] text-balance">
-        Łączymy <span class="text-acid">media</span>, <span class="text-acid">sport</span> <span class="whitespace-nowrap">i&nbsp;<span class="text-acid">internet</span></span> w jedną potężną machinę zasięgów.
-      </h2>
-
-      <p class="mt-10 lg:mt-14 text-base lg:text-xl text-bone/65 max-w-2xl leading-relaxed">
-        Własne portale, własne studio, własne formaty — i dystrybucja, której zazdroszczą najwięksi.
-      </p>
+      <div class="hidden lg:block lg:col-span-5 self-end">
+        <img
+          src="/images/laptop.png"
+          alt="Laptop z otwartym portalem Fansportu.pl"
+          loading="lazy"
+          decoding="async"
+          class="h-auto ml-auto select-none pointer-events-none block lg:w-[58vw] lg:max-w-[1200px] max-w-none"
+          width="880"
+          height="602"
+        />
+      </div>
     </div>
 
     <div class="grid grid-cols-4 divide-x divide-y divide-white/10 border-t border-white/10">

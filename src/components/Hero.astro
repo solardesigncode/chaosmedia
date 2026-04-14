@@ -1,31 +1,23 @@
 ---
-import Antigravity from "./Antigravity.astro";
+import Beams from "./Beams.astro";
 ---
 
 <section
   id="top"
   class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden bg-ink"
 >
-  <Antigravity
-    count={300}
-    magnetRadius={2}
-    ringRadius={25}
-    waveSpeed={0.25}
-    waveAmplitude={0.5}
-    particleSize={2}
-    lerpSpeed={0.04}
-    color="#b8c866"
-    opacity={0.55}
-    autoAnimate={false}
-    particleVariance={0.3}
-    rotationSpeed={0}
-    depthFactor={0.05}
-    pulseSpeed={1.5}
-    particleShape="capsule"
-    fieldStrength={10}
+  <Beams
+    beamWidth={2}
+    beamHeight={15}
+    beamNumber={12}
+    lightColor="#efff9e"
+    speed={2}
+    noiseIntensity={1.75}
+    scale={0.2}
+    rotation={0}
   />
-  <!-- subtle wash to keep H1 legible over the particle field -->
-  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/50 via-transparent to-ink/40"></div>
+  <!-- subtle wash so H1 keeps contrast over the beams -->
+  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/60 via-ink/25 to-ink/50"></div>
 
   <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full text-center">

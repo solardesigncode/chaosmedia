@@ -1,4 +1,7 @@
 ---
+// Fansportu sygnet is dark-stroked on white — invert filter turns it white,
+// then the `studio-watermark` class drops opacity so it becomes a near-ink
+// watermark sitting next to the headline.
 const left = [
   "150 000+ subskrypcji YouTube",
   "Topowe postacie sportu",
@@ -14,21 +17,34 @@ const right = [
 ---
 
 <section id="studio" class="py-28 lg:py-40 border-t border-white/10 bg-smoke">
+  <style is:global>
+    .studio-watermark {
+      filter: brightness(0) invert(1);
+      opacity: 0.05;
+    }
+  </style>
   <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
-    <div class="flex items-end justify-between gap-8 mb-16">
-      <div>
+    <div class="relative grid lg:grid-cols-12 gap-8 items-center mb-16">
+      <div class="lg:col-span-8 relative z-10">
         <div class="text-xs uppercase tracking-[0.32em] text-acid">05 — Studio</div>
         <h2 class="mt-6 font-display font-semibold text-bone text-5xl lg:text-7xl">
           Fansportu&nbsp;TV<br />
           <span class="text-acid">własne</span> studio<br />
           produkcyjne
         </h2>
+        <p class="mt-10 lg:mt-12 max-w-3xl text-lg text-bone/70 leading-relaxed">
+          Profesjonalne studio, w którym powstają wywiady, programy sportowe i viralowe formaty. Łączymy jakość telewizyjną z dynamiką social mediów, tworząc treści, które realnie generują zasięgi.
+        </p>
+      </div>
+      <div class="hidden lg:flex lg:col-span-4 justify-end items-center">
+        <img
+          src="/logos/fansportu-sygnet.svg"
+          alt=""
+          aria-hidden="true"
+          class="studio-watermark block h-[clamp(16rem,30vw,30rem)] w-auto select-none pointer-events-none"
+        />
       </div>
     </div>
-
-    <p class="max-w-3xl text-lg text-bone/70 leading-relaxed mb-16">
-      Profesjonalne studio, w którym powstają wywiady, programy sportowe i viralowe formaty. Łączymy jakość telewizyjną z dynamiką social mediów, tworząc treści, które realnie generują zasięgi.
-    </p>
 
     <div class="grid lg:grid-cols-12 gap-10">
       <figure class="lg:col-span-5 relative group overflow-hidden border border-white/10">
