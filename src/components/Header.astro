@@ -8,7 +8,7 @@ const nav = [
 ];
 ---
 
-<header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-ink/60 border-b border-white/5">
+<header id="site-header" class="site-header fixed top-0 inset-x-0 z-50">
   <div class="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 lg:h-20 flex items-center justify-between">
     <a
       href="#top"
@@ -99,6 +99,30 @@ const nav = [
 </div>
 
 <style is:global>
+  /* Header: transparent in hero, gains bg after scroll */
+  .site-header {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    backdrop-filter: blur(0);
+    transition:
+      background-color 0.35s ease,
+      border-bottom-color 0.35s ease,
+      backdrop-filter 0.35s ease;
+  }
+  .site-header.is-scrolled {
+    background: rgba(10, 10, 10, 0.65);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  /* When fullscreen menu is open, force transparent so the menu's own bg shows through */
+  body.menu-open .site-header {
+    background: transparent !important;
+    border-bottom-color: transparent !important;
+    backdrop-filter: blur(0) !important;
+    -webkit-backdrop-filter: blur(0) !important;
+  }
+
   /* Hamburger → X animation */
   .hamburger-icon .bar {
     transition: transform 0.4s cubic-bezier(0.85, 0, 0.15, 1), top 0.2s ease 0.2s;
@@ -172,6 +196,27 @@ const nav = [
 </style>
 
 <script>
+  // Scroll-aware header — transparent over hero, gains bg after scroll
+  const header = document.getElementById("site-header");
+  if (header) {
+    let ticking = false;
+    const update = () => {
+      header.classList.toggle("is-scrolled", window.scrollY > 24);
+      ticking = false;
+    };
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+    update();
+  }
+
   const toggle = document.getElementById("menu-toggle");
   const menu = document.getElementById("fullscreen-menu");
   const body = document.body;

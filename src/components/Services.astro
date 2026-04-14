@@ -1,4 +1,6 @@
 ---
+import DotPattern from "./DotPattern.astro";
+
 const services = [
   {
     n: "01",
@@ -21,16 +23,27 @@ const services = [
 ];
 ---
 
-<section id="co-robimy" class="py-28 lg:py-40 border-t border-white/10">
-  <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
+<section id="co-robimy" class="relative overflow-hidden py-28 lg:py-40 border-t border-white/10">
+  <DotPattern
+    dotSize={2}
+    gap={30}
+    baseColor="#2a2a2a"
+    glowColor="#e6ff00"
+    proximity={170}
+    glowIntensity={1}
+    waveSpeed={0.4}
+  />
+
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 relative z-10">
     <div class="flex items-end justify-between gap-8 mb-16 lg:mb-24">
       <div>
         <div class="text-xs uppercase tracking-[0.32em] text-bone/50">02 — Co robimy</div>
-        <h2 class="mt-6 font-display font-semibold text-bone text-6xl lg:text-8xl">
-          Co<br />robimy<span class="text-acid">.</span>
+        <h2 class="mt-6 font-display font-semibold text-bone text-6xl lg:text-8xl whitespace-nowrap">
+          <span class="lg:hidden">Co<br />robimy<span class="text-acid">.</span></span>
+          <span class="hidden lg:inline">Co robimy<span class="text-acid">.</span></span>
         </h2>
       </div>
-      <div class="hidden lg:block text-sm text-bone/50 max-w-xs text-right">
+      <div class="hidden lg:block text-sm text-bone/50 text-right whitespace-nowrap shrink-0">
         Trzy filary, na których stoi każda kampania Chaos Media.
       </div>
     </div>
