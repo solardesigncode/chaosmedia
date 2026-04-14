@@ -1,15 +1,17 @@
 ---
-const clients = [
-  "eFortuna.pl",
-  "Superbet",
-  "Monster Energy",
-  "Royal Watch",
-  "GROMDA",
-  "DAZN",
-  "Sportowe Fakty WP",
-  "wlepki.com",
-  "octagonshop.pl",
-  "skleptmk.pl",
+type Client = { name: string; logo?: string };
+
+const clients: Client[] = [
+  { name: "eFortuna.pl" },
+  { name: "Superbet", logo: "/logos/partners/superbet.svg" },
+  { name: "Monster Energy", logo: "/logos/partners/monster.webp" },
+  { name: "Royal Watch", logo: "/logos/partners/royal-watch.png" },
+  { name: "GROMDA", logo: "/logos/partners/gromda.webp" },
+  { name: "DAZN", logo: "/logos/partners/dazn.png" },
+  { name: "Sportowe Fakty WP", logo: "/logos/partners/sportowefakty.svg" },
+  { name: "wlepki.com" },
+  { name: "octagonshop.pl", logo: "/logos/partners/octagon.png" },
+  { name: "skleptmk.pl" },
 ];
 const loop = [...clients, ...clients];
 ---
@@ -21,14 +23,50 @@ const loop = [...clients, ...clients];
   </div>
 
   <div class="relative overflow-hidden">
-    <div class="ticker flex gap-16 whitespace-nowrap will-change-transform">
-      {loop.map((c) => (
-        <span class="font-display font-bold text-bone/30 hover:text-acid transition-colors text-4xl lg:text-6xl tracking-tight">
-          {c} <span class="text-acid/60 mx-6">/</span>
-        </span>
-      ))}
+    <div class="ticker flex items-center gap-12 lg:gap-16 whitespace-nowrap will-change-transform">
+      {loop.map((c, i) => {
+        const ghost = i >= clients.length;
+        return (
+          <div class="flex items-center gap-12 lg:gap-16 shrink-0">
+            {c.logo ? (
+              <img
+                src={c.logo}
+                alt={ghost ? "" : `Logo ${c.name}`}
+                aria-hidden={ghost ? "true" : undefined}
+                loading="lazy"
+                decoding="async"
+                class="partner-logo h-10 lg:h-14 w-auto max-w-[180px] lg:max-w-[220px] object-contain"
+              />
+            ) : (
+              <span
+                class="font-display font-bold text-bone/30 hover:text-acid transition-colors text-3xl lg:text-5xl tracking-tight"
+                aria-hidden={ghost ? "true" : undefined}
+              >
+                {c.name}
+              </span>
+            )}
+            <span class="text-acid/50 text-2xl lg:text-3xl shrink-0" aria-hidden="true">/</span>
+          </div>
+        );
+      })}
     </div>
-    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-smoke to-transparent"></div>
-    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-smoke to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-smoke to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-smoke to-transparent"></div>
   </div>
 </section>
+
+<style is:global>
+  /* Raster partner logos (png/webp) forced to white silhouettes so they
+     match the monochrome landing-page aesthetic. */
+  .partner-logo {
+    filter: brightness(0) invert(1);
+    opacity: 0.55;
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+  }
+  .partner-logo:hover {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+</style>

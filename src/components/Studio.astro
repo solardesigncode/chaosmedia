@@ -18,36 +18,106 @@ const right = [
 
 <section id="studio" class="py-28 lg:py-40 border-t border-white/10 bg-smoke">
   <style is:global>
+    /* Sygnet is filled with the section bg colour and fully opaque,
+       sitting ON TOP of an orbiting acid "kulka". The ball glows from
+       below and is occluded wherever the sygnet's paths draw the
+       F-shape, so only the negative space + outer orbit is visible. */
     .studio-watermark {
-      filter: brightness(0) invert(1);
-      opacity: 0.05;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+    .studio-orbit {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .studio-orbit::before {
+      content: "";
+      position: absolute;
+      /* Ball locked slightly above centre (60% × 60%, top: 5%, left: 20%). */
+      width: 60%;
+      height: 60%;
+      top: 5%;
+      left: 20%;
+      border-radius: 9999px;
+      background:
+        radial-gradient(
+          circle,
+          rgba(230, 255, 0, 0.55) 0%,
+          rgba(230, 255, 0, 0.22) 40%,
+          rgba(230, 255, 0, 0.08) 65%,
+          transparent 78%
+        );
+      filter: blur(55px);
+      will-change: transform, opacity;
+      animation: studio-orbit-pulse 6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+    @keyframes studio-orbit-pulse {
+      0%,
+      100% {
+        transform: scale(0.9);
+        opacity: 0.55;
+      }
+      50% {
+        transform: scale(1.15);
+        opacity: 1;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .studio-orbit::before {
+        animation: none;
+      }
     }
   </style>
-  <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
-    <div class="relative grid lg:grid-cols-12 gap-8 items-center mb-16">
-      <div class="lg:col-span-8 relative z-10">
-        <div class="text-xs uppercase tracking-[0.32em] text-acid">05 — Studio</div>
-        <h2 class="mt-6 font-display font-semibold text-bone text-5xl lg:text-7xl">
-          Fansportu&nbsp;TV<br />
-          <span class="text-acid">własne</span> studio<br />
-          produkcyjne
-        </h2>
-        <p class="mt-10 lg:mt-12 max-w-3xl text-lg text-bone/70 leading-relaxed">
-          Profesjonalne studio, w którym powstają wywiady, programy sportowe i viralowe formaty. Łączymy jakość telewizyjną z dynamiką social mediów, tworząc treści, które realnie generują zasięgi.
-        </p>
-      </div>
-      <div class="hidden lg:flex lg:col-span-4 justify-end items-center">
-        <img
-          src="/logos/fansportu-sygnet.svg"
-          alt=""
-          aria-hidden="true"
-          class="studio-watermark block h-[clamp(16rem,30vw,30rem)] w-auto select-none pointer-events-none"
-        />
-      </div>
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 relative">
+    <div
+      class="studio-logo-orbit hidden lg:block absolute top-0 right-[-3rem] xl:right-[-6rem] z-0 h-[clamp(20rem,38vw,40rem)] w-[clamp(20rem,38vw,40rem)] pointer-events-none"
+      aria-hidden="true"
+    >
+      <div class="studio-orbit"></div>
+      <svg
+        class="studio-watermark select-none overflow-visible"
+        viewBox="0 0 117.8 117.8"
+        overflow="visible"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+      <defs>
+        <!-- Inverted sygnet: a bg-smoke rectangle with the F-shape
+             punched out, so the orbit ball behind is visible *inside*
+             the F silhouette and blocked everywhere else. -->
+        <mask id="studio-sygnet-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="117.8" height="117.8">
+          <rect width="117.8" height="117.8" fill="white" />
+          <path d="M39.8,17.8l-30.6,30.7h17.5v61.5L0,83.3v-48.8L34.5,0h48.8l17.8,17.8h-61.3Z" fill="black" />
+          <path d="M117.8,34.5v48.8l-34.5,34.5h-48.8l-6.8-6.8,31.2-32.8h-20l9.7-9.6h20l20.1-20.1h-45.6l9.6-9.6h45.6l12-12,7.6,7.7h0Z" fill="black" />
+        </mask>
+      </defs>
+      <rect
+        width="117.8"
+        height="117.8"
+        fill="#15151a"
+        mask="url(#studio-sygnet-cutout)"
+      />
+    </svg>
     </div>
 
-    <div class="grid lg:grid-cols-12 gap-10">
-      <figure class="lg:col-span-5 relative group overflow-hidden border border-white/10">
+    <div class="relative z-10 mb-16">
+      <div class="text-xs uppercase tracking-[0.32em] text-acid">05 — Studio</div>
+      <h2 class="mt-6 font-display font-semibold text-bone text-5xl lg:text-7xl">
+        Fansportu&nbsp;TV<br />
+        <span class="text-acid">własne</span> studio<br />
+        produkcyjne
+      </h2>
+      <p class="mt-10 lg:mt-12 max-w-3xl text-lg text-bone/70 leading-relaxed">
+        Profesjonalne studio, w którym powstają wywiady, programy sportowe i viralowe formaty. Łączymy jakość telewizyjną z dynamiką social mediów, tworząc treści, które realnie generują zasięgi.
+      </p>
+    </div>
+
+    <div class="relative z-10 grid lg:grid-cols-12 gap-10">
+      <figure class="lg:col-span-5 relative group overflow-hidden border border-white/10 bg-ink">
         <img
           src="/images/studio.jpg"
           alt="Wnętrze studia produkcyjnego Fansportu TV — ceglane ściany, oświetlenie sceniczne, stanowiska montażowe"

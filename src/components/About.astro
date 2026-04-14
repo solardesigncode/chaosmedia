@@ -3,22 +3,64 @@ type Media = {
   name: string;
   logo: string;
   href: string;
+  /** one-line description shown below the logo */
+  desc: string;
   /** true for raster (avif/png/jpg) — gets CSS invert treatment */
   raster?: boolean;
 };
 
 const media: Media[] = [
-  { name: "fansportu.pl", logo: "/logos/portals/fansportu.svg", href: "https://fansportu.pl" },
-  { name: "strefamma.pl", logo: "/logos/portals/strefamma.svg", href: "https://strefamma.pl" },
-  { name: "mymma.pl", logo: "/logos/portals/mymma.svg", href: "https://mymma.pl" },
-  { name: "pantofelek.pl", logo: "/logos/portals/pantofelek.avif", href: "https://pantofelek.pl", raster: true },
-  { name: "filmiki.tv", logo: "/logos/portals/filmikitv.svg", href: "https://filmiki.tv" },
-  { name: "typowykibic.pl", logo: "/logos/portals/typowykibic.svg", href: "https://typowykibic.pl" },
-  { name: "niewiarygodnemiejsca.pl", logo: "/logos/portals/niewiarygodnemiejsca.avif", href: "https://niewiarygodnemiejsca.pl", raster: true },
+  {
+    name: "fansportu.pl",
+    logo: "/logos/portals/fansportu.svg",
+    href: "https://fansportu.pl",
+    desc: "Portal sportowy",
+  },
+  {
+    name: "strefamma.pl",
+    logo: "/logos/portals/strefamma.svg",
+    href: "https://strefamma.pl",
+    desc: "Serwis o sportach walki",
+  },
+  {
+    name: "mymma.pl",
+    logo: "/logos/portals/mymma.svg",
+    href: "https://mymma.pl",
+    desc: "Magazyn MMA",
+  },
+  {
+    name: "pantofelek.pl",
+    logo: "/logos/portals/pantofelek.avif",
+    href: "https://pantofelek.pl",
+    desc: "Lifestyle kobiecy",
+    raster: true,
+  },
+  {
+    name: "filmiki.tv",
+    logo: "/logos/portals/filmikitv.svg",
+    href: "https://filmiki.tv",
+    desc: "Rozrywka i wideo",
+  },
+  {
+    name: "typowykibic.pl",
+    logo: "/logos/portals/typowykibic.svg",
+    href: "https://typowykibic.pl",
+    desc: "Społeczność kibiców",
+  },
+  {
+    name: "niewiarygodnemiejsca.pl",
+    logo: "/logos/portals/niewiarygodnemiejsca.avif",
+    href: "https://niewiarygodnemiejsca.pl",
+    desc: "Podróże i odkrycia",
+    raster: true,
+  },
+  {
+    name: "watchcode.net",
+    logo: "/logos/portals/watchcode.svg",
+    href: "https://watchcode.net",
+    desc: "Afiliacja",
+  },
 ];
-
-// Duplicate the list so the marquee seamlessly loops (track animates -50%)
-const loop = [...media, ...media];
 ---
 
 <section id="media" class="py-28 lg:py-40">
@@ -39,38 +81,54 @@ const loop = [...media, ...media];
     </div>
   </div>
 
-  <div class="mb-6 lg:mb-8 max-w-[1400px] mx-auto px-6 lg:px-10 flex items-baseline justify-between">
-    <div class="text-xs uppercase tracking-[0.32em] text-acid">Nasze portale</div>
-    <div class="text-xs tracking-[0.18em] text-bone/30 tabular-nums">{media.length} / media</div>
-  </div>
-
-  <div class="portal-ticker relative overflow-hidden">
-    <div class="portal-ticker-track flex items-center gap-14 lg:gap-20 py-4 lg:py-6 whitespace-nowrap will-change-transform">
-      {loop.map((m, i) => (
-        <a
-          href={m.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-hidden={i >= media.length ? "true" : undefined}
-          tabindex={i >= media.length ? -1 : undefined}
-          class="portal-logo-link group shrink-0 flex items-center"
-          title={m.name}
-        >
-          <img
-            src={m.logo}
-            alt={`Logo ${m.name}`}
-            loading="lazy"
-            decoding="async"
-            class:list={[
-              "portal-logo h-8 lg:h-10 w-auto max-w-[180px] lg:max-w-[220px] object-contain transition-all duration-500",
-              m.raster ? "portal-logo--raster" : "",
-            ]}
-          />
-        </a>
-      ))}
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
+    <div class="mb-6 lg:mb-8 flex items-baseline justify-between">
+      <div class="text-xs uppercase tracking-[0.32em] text-acid">Nasze portale</div>
+      <div class="text-xs tracking-[0.18em] text-bone/30 tabular-nums">{media.length} / media</div>
     </div>
-    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-ink to-transparent"></div>
-    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-ink to-transparent"></div>
+
+    <ul class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
+      {media.map((m, i) => (
+        <li>
+          <a
+            href={m.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="portal-card group relative block border border-white/10 bg-smoke hover:border-acid hover:bg-ink transition-all p-6 lg:p-8 aspect-[5/4] flex flex-col justify-between overflow-hidden"
+          >
+            <span class="absolute top-3 left-3 text-[10px] tabular-nums text-bone/30">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span
+              class="absolute top-3 right-3 text-bone/40 text-xl leading-none transition-all group-hover:text-acid group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            >↗</span>
+
+            <div class="flex-1 flex items-center justify-center pt-6 pb-4">
+              <img
+                src={m.logo}
+                alt={`Logo ${m.name}`}
+                loading="lazy"
+                decoding="async"
+                class:list={[
+                  "portal-logo max-h-10 lg:max-h-12 max-w-[75%] object-contain transition-all duration-500",
+                  m.raster ? "portal-logo--raster" : "",
+                ]}
+              />
+            </div>
+
+            <div class="border-t border-white/10 pt-4 group-hover:border-acid/40 transition-colors">
+              <div class="font-display font-semibold text-bone text-base lg:text-lg tracking-tight">
+                {m.name}
+              </div>
+              <div class="mt-1 text-[11px] lg:text-xs text-bone/50 uppercase tracking-[0.14em]">
+                {m.desc}
+              </div>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
 
@@ -80,25 +138,11 @@ const loop = [...media, ...media];
   .portal-logo--raster {
     filter: brightness(0) invert(1);
   }
-  .portal-logo-link .portal-logo {
-    opacity: 0.6;
+  .portal-card .portal-logo {
+    opacity: 0.7;
   }
-  .portal-logo-link:hover .portal-logo {
+  .portal-card:hover .portal-logo {
     opacity: 1;
     transform: scale(1.05);
-  }
-
-  .portal-ticker-track {
-    animation: portal-ticker 50s linear infinite;
-  }
-  .portal-ticker:hover .portal-ticker-track {
-    animation-play-state: paused;
-  }
-  @keyframes portal-ticker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .portal-ticker-track { animation: none; }
   }
 </style>

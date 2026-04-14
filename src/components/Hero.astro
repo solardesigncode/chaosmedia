@@ -1,23 +1,27 @@
 ---
-import Beams from "./Beams.astro";
+import Particles from "./Particles.astro";
 ---
 
 <section
   id="top"
   class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden bg-ink"
 >
-  <Beams
-    beamWidth={2}
-    beamHeight={15}
-    beamNumber={12}
-    lightColor="#efff9e"
-    speed={2}
-    noiseIntensity={1.75}
-    scale={0.2}
-    rotation={0}
+  <Particles
+    particleCount={500}
+    particleSpread={10}
+    speed={0.1}
+    particleColors={["#e6ff00", "#efff9e", "#b8c866", "#f5f5f2"]}
+    moveParticlesOnHover={true}
+    particleHoverFactor={1}
+    alphaParticles={true}
+    particleBaseSize={100}
+    sizeRandomness={1}
+    cameraDistance={20}
+    disableRotation={false}
+    pixelRatio={1}
   />
-  <!-- subtle wash so H1 keeps contrast over the beams -->
-  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/60 via-ink/25 to-ink/50"></div>
+  <!-- subtle wash so H1 keeps contrast over the particles -->
+  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/50 via-ink/15 to-ink/50"></div>
 
   <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full text-center">

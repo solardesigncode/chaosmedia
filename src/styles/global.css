@@ -132,3 +132,36 @@
     to { opacity: 1; transform: translateY(0); }
   }
 }
+
+/* Shared "wandering orbit" animation — a blurred acid ball drifting in
+   non-repeating coprime rhythms along X and Y. Used by Studio.astro and
+   Stats.astro (laptop backlight). */
+@property --orbit-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --orbit-y {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 25%;
+}
+@keyframes orbit-wander-x {
+  0%, 100% { --orbit-x: 50%; }
+  14%  { --orbit-x: 92%; }
+  29%  { --orbit-x: 68%; }
+  43%  { --orbit-x: 15%; }
+  57%  { --orbit-x: 5%; }
+  71%  { --orbit-x: 40%; }
+  86%  { --orbit-x: 82%; }
+}
+@keyframes orbit-wander-y {
+  0%, 100% { --orbit-y: 22%; }
+  13%  { --orbit-y: 8%; }
+  27%  { --orbit-y: 65%; }
+  40%  { --orbit-y: 88%; }
+  53%  { --orbit-y: 12%; }
+  67%  { --orbit-y: 55%; }
+  80%  { --orbit-y: 32%; }
+  93%  { --orbit-y: 78%; }
+}
