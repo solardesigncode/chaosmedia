@@ -1,0 +1,75 @@
+---
+import GradientBars from "./GradientBars.astro";
+---
+
+<section
+  id="top"
+  class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden"
+>
+  <GradientBars
+    numBars={13}
+    animationDuration={3.2}
+    gradientFrom="rgba(230, 255, 0, 0.42)"
+  />
+  <!-- darken the top of the hero so headline stays legible against the bars -->
+  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink via-ink/80 to-ink/10"></div>
+
+  <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full">
+      <div class="flex items-center gap-3 text-xs uppercase tracking-[0.32em] text-bone/60 reveal">
+        <span class="inline-block w-8 h-px bg-acid"></span>
+        Chaos Media — agencja viralowa
+      </div>
+
+      <h1 class="reveal mt-5 lg:mt-7 font-display font-semibold text-bone text-[clamp(2.5rem,8.5vw,8.25rem)] leading-[0.85] tracking-[-0.04em]">
+        <span class="block">Tworzymy</span>
+        <span class="word-rotator" aria-label="viralowe, wirusowe, milionowe, kosmiczne">
+          <span class="word-rotator-track">
+            <span class="word">viralowe</span>
+            <span class="word">wirusowe</span>
+            <span class="word">milionowe</span>
+            <span class="word">kosmiczne</span>
+            <span class="word" aria-hidden="true">viralowe</span>
+          </span>
+        </span>
+        <span class="block">treści<span class="text-acid">.</span></span>
+      </h1>
+
+      <div class="mt-7 lg:mt-10 grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+        <p
+          class="lg:col-span-6 lg:col-start-6 text-base lg:text-lg text-bone/70 max-w-xl reveal"
+          style="animation-delay:0.15s"
+        >
+          Łączymy media, sport i internet w jedną potężną machinę zasięgów. Własne portale, własne studio, własne formaty — i dystrybucja, której zazdroszczą najwięksi.
+        </p>
+      </div>
+
+      <div
+        class="mt-7 lg:mt-10 flex flex-wrap items-center gap-5 lg:gap-6 reveal"
+        style="animation-delay:0.3s"
+      >
+        <a
+          href="mailto:biuro@chaosmedia.pl"
+          class="group inline-flex items-center gap-3 bg-acid text-ink px-6 py-3.5 lg:px-7 lg:py-4 font-display font-bold text-base lg:text-lg uppercase tracking-[0.04em] hover:gap-5 transition-all"
+        >
+          Stwórzmy viral
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="#co-robimy"
+          class="text-xs lg:text-sm uppercase tracking-[0.18em] text-bone/60 hover:text-bone transition-colors underline-offset-4 hover:underline"
+        >
+          Zobacz co robimy
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- subtle scroll cue, anchored to bottom -->
+  <div class="relative z-10 pb-6 lg:pb-8 flex justify-center pointer-events-none">
+    <div class="flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-bone/40">
+      <span>Scroll</span>
+      <span class="inline-block w-px h-6 bg-bone/30"></span>
+    </div>
+  </div>
+</section>

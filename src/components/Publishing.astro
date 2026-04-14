@@ -1,0 +1,95 @@
+---
+const facts = [
+  { value: "2", label: "bestsellery wydawnicze" },
+  { value: "100k+", label: "odbiorców" },
+  { value: "viral", label: "marketing oparty na emocjach" },
+];
+---
+
+<section class="py-28 lg:py-40 border-t border-white/10 relative overflow-hidden">
+  <div class="absolute -left-40 top-1/2 -translate-y-1/2 font-display font-semibold text-[20rem] text-white/[0.025] select-none pointer-events-none whitespace-nowrap">
+    BESTSELLERS
+  </div>
+
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 relative">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+      <div class="lg:col-span-6">
+        <div class="text-xs uppercase tracking-[0.32em] text-bone/50">04 — Wydawnictwo</div>
+        <h2 class="mt-6 font-display font-semibold text-bone text-5xl lg:text-7xl">
+          Tworzymy historie,<br />
+          które <span class="accent-italic text-bone/60">sprzedają się</span> <span class="text-acid">same.</span>
+        </h2>
+        <p class="mt-8 text-lg text-bone/70 leading-relaxed max-w-xl">
+          Nie tylko generujemy zasięgi — budujemy emocje i narracje, które przyciągają uwagę mas. Nasze projekty wydawnicze osiągnęły status bestsellerów.
+        </p>
+
+        <dl class="mt-12 grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
+          {facts.map((f) => (
+            <div>
+              <dt class="font-display font-semibold text-acid text-3xl lg:text-4xl">{f.value}</dt>
+              <dd class="mt-2 text-xs uppercase tracking-[0.18em] text-bone/60">{f.label}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div class="lg:col-span-6 grid grid-cols-2 gap-5 lg:gap-8">
+        {[
+          {
+            cover: "/books/rybak-cover.jpg",
+            title: "Zbigniew Rybak.",
+            sub: "Syn Józefa",
+            href: "https://www.zbigniewrybak.pl",
+            offset: "lg:translate-y-6",
+          },
+          {
+            cover: "/books/rozal-cover.jpg",
+            title: "Rozal.",
+            sub: "Instrukcja samodestrukcji",
+            href: "https://www.ksiazkarozala.pl",
+            offset: "lg:-translate-y-6",
+          },
+        ].map((book, i) => (
+          <a
+            href={book.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`group block transition-transform duration-500 hover:-translate-y-2 ${book.offset}`}
+          >
+            <div class="relative aspect-[3/4] overflow-hidden border border-white/10">
+              <img
+                src={book.cover}
+                alt={`Okładka książki ${book.title} ${book.sub}`}
+                loading="lazy"
+                decoding="async"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+              />
+            </div>
+            <div class="mt-5 flex items-start justify-between gap-3">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.32em] text-bone/40 mb-2">
+                  Bestseller · 0{i + 1}
+                </div>
+                <div class="font-display font-semibold text-bone text-xl lg:text-2xl leading-none">
+                  {book.title}
+                </div>
+                <div class="mt-2 accent-italic text-bone/65 text-sm lg:text-base">
+                  {book.sub}
+                </div>
+              </div>
+              <span class="text-acid text-xl shrink-0 mt-1 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                ↗
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="mt-20 max-w-2xl">
+      <p class="text-bone/50 italic text-lg">
+        „To samo podejście wykorzystujemy w kampaniach dla marek."
+      </p>
+    </div>
+  </div>
+</section>

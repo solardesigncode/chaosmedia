@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@import url("https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap");
+@import "@fontsource-variable/archivo";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+
+@theme {
+  --font-display: "Clash Display", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  --color-ink: #0a0a0a;
+  --color-bone: #f5f5f2;
+  --color-acid: #e6ff00;
+  --color-smoke: #15151a;
+  --color-fog: #2a2a30;
+  --color-mute: #6b6b75;
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-acid);
+    color: var(--color-ink);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 0.95;
+  }
+
+  /* film grain overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+}
+
+@layer utilities {
+  /* kinetic word rotator — swaps an adjective in place inside a headline */
+  .word-rotator {
+    display: block;
+    height: 0.85em;
+    overflow: hidden;
+    position: relative;
+  }
+  .word-rotator-track {
+    display: block;
+    animation: rotate-words 11s cubic-bezier(0.85, 0, 0.15, 1) infinite;
+    will-change: transform;
+  }
+  .word-rotator .word {
+    display: block;
+    height: 0.85em;
+    line-height: 0.85;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-acid);
+    letter-spacing: -0.01em;
+  }
+  @keyframes rotate-words {
+    0%, 16%   { transform: translateY(0); }
+    21%, 37%  { transform: translateY(-0.85em); }
+    42%, 58%  { transform: translateY(-1.7em); }
+    63%, 79%  { transform: translateY(-2.55em); }
+    84%, 100% { transform: translateY(-3.4em); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .word-rotator-track { animation: none; }
+  }
+
+  /* editorial italic accent — real italic glyphs from Instrument Serif */
+  .accent-italic {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-feature-settings: "liga", "calt";
+  }
+
+  .ticker {
+    animation: ticker 40s linear infinite;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .reveal {
+    animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}

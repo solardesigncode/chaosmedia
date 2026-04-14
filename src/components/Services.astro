@@ -1,0 +1,52 @@
+---
+const services = [
+  {
+    n: "01",
+    title: "Produkcja wideo",
+    body: "Tworzymy viralowe materiały, sondy uliczne i formaty social media — od pomysłu, przez plan zdjęciowy, po dystrybucję.",
+    glyph: "▶",
+  },
+  {
+    n: "02",
+    title: "Lokowanie produktów",
+    body: "Naturalne integracje produktów w treściach o ogromnych zasięgach. Twoja marka w narracji, nie obok niej.",
+    glyph: "◆",
+  },
+  {
+    n: "03",
+    title: "Zasięgi i kampanie",
+    body: "Skalujemy kampanie do milionów odbiorców w krótkim czasie. Wiemy, jak palić paliwo algorytmu.",
+    glyph: "✦",
+  },
+];
+---
+
+<section id="co-robimy" class="py-28 lg:py-40 border-t border-white/10">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
+    <div class="flex items-end justify-between gap-8 mb-16 lg:mb-24">
+      <div>
+        <div class="text-xs uppercase tracking-[0.32em] text-bone/50">02 — Co robimy</div>
+        <h2 class="mt-6 font-display font-semibold text-bone text-6xl lg:text-8xl">
+          Co<br />robimy<span class="text-acid">.</span>
+        </h2>
+      </div>
+      <div class="hidden lg:block text-sm text-bone/50 max-w-xs text-right">
+        Trzy filary, na których stoi każda kampania Chaos Media.
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 border-l border-t border-white/10">
+      {services.map((s) => (
+        <article class="group relative border-r border-b border-white/10 p-10 lg:p-12 hover:bg-smoke transition-colors">
+          <div class="flex items-center justify-between text-bone/40 text-xs tracking-[0.24em]">
+            <span>{s.n}</span>
+            <span class="text-acid text-xl group-hover:rotate-12 transition-transform">{s.glyph}</span>
+          </div>
+          <h3 class="mt-12 font-display font-semibold text-bone text-3xl lg:text-4xl">{s.title}</h3>
+          <p class="mt-6 text-bone/65 leading-relaxed">{s.body}</p>
+          <div class="mt-12 h-px w-12 bg-acid group-hover:w-full transition-all duration-700"></div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

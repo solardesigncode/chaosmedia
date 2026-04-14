@@ -1,0 +1,56 @@
+---
+interface Props {
+  numBars?: number;
+  gradientFrom?: string;
+  gradientTo?: string;
+  animationDuration?: number;
+  class?: string;
+}
+
+const {
+  numBars = 11,
+  gradientFrom = "rgba(230, 255, 0, 0.22)",
+  gradientTo = "transparent",
+  animationDuration = 3,
+  class: className = "",
+} = Astro.props;
+
+const calcHeight = (i: number, total: number) => {
+  const position = i / (total - 1);
+  const distanceFromCenter = Math.abs(position - 0.5);
+  const heightPercentage = Math.pow(distanceFromCenter * 2, 1.2);
+  return 55 + 45 * heightPercentage;
+};
+
+const bars = Array.from({ length: numBars }, (_, i) => {
+  const h = calcHeight(i, numBars);
+  return { scale: +(h / 100).toFixed(4), delay: +(i * 0.12).toFixed(2) };
+});
+---
+
+<div class:list={["gradient-bars absolute inset-0 z-0 overflow-hidden pointer-events-none", className]} aria-hidden="true">
+  <div class="flex h-full w-full">
+    {bars.map((bar) => (
+      <div
+        class="bar flex-1 h-full will-change-transform"
+        style={`
+          background: linear-gradient(to top, ${gradientFrom}, ${gradientTo});
+          transform: scaleY(${bar.scale});
+          transform-origin: bottom;
+          animation: gradientBarPulse ${animationDuration}s ease-in-out ${bar.delay}s infinite alternate;
+          --initial-scale: ${bar.scale};
+        `}
+      />
+    ))}
+  </div>
+</div>
+
+<style is:global>
+  @keyframes gradientBarPulse {
+    0% { transform: scaleY(var(--initial-scale)); }
+    100% { transform: scaleY(calc(var(--initial-scale) * 0.78)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gradient-bars .bar { animation: none !important; }
+  }
+</style>

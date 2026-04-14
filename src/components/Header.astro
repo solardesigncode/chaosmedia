@@ -1,0 +1,30 @@
+---
+const nav = [
+  { label: "Co robimy", href: "#co-robimy" },
+  { label: "Media", href: "#media" },
+  { label: "Studio", href: "#studio" },
+  { label: "Kontakt", href: "#kontakt" },
+];
+---
+
+<header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-ink/60 border-b border-white/5">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+    <a href="#top" class="group flex items-center gap-2 font-display text-bone text-xl tracking-tight">
+      <span class="inline-block w-2 h-2 rounded-full bg-acid group-hover:scale-150 transition-transform"></span>
+      <span class="font-semibold">CHAOS&nbsp;MEDIA</span>
+      <sup class="text-acid text-xs">®</sup>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm uppercase tracking-[0.18em] text-bone/70">
+      {nav.map((item) => (
+        <a href={item.href} class="hover:text-acid transition-colors">{item.label}</a>
+      ))}
+    </nav>
+    <a
+      href="mailto:biuro@chaosmedia.pl"
+      class="hidden md:inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] border border-bone/20 px-4 py-2 hover:bg-acid hover:border-acid hover:text-ink transition-colors"
+    >
+      Napisz do nas
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</header>
