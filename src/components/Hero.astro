@@ -1,18 +1,30 @@
 ---
-import GradientBars from "./GradientBars.astro";
+import RadialGradient from "./RadialGradient.astro";
 ---
 
 <section
   id="top"
-  class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden"
+  class="relative min-h-dvh lg:h-dvh flex flex-col overflow-hidden bg-ink"
 >
-  <GradientBars
-    numBars={13}
-    animationDuration={3.2}
-    gradientFrom="rgba(230, 255, 0, 0.42)"
+  <RadialGradient
+    startingGap={125}
+    breathing={true}
+    breathingRange={6}
+    animationSpeed={0.025}
+    topOffset={10}
+    gradientColors={[
+      "#0a0a0a",
+      "#15151a",
+      "#2a2a20",
+      "#3a3c10",
+      "#7a8a12",
+      "#242410",
+      "#0a0a0a",
+    ]}
+    gradientStops={[30, 50, 62, 72, 82, 92, 100]}
   />
-  <!-- darken the top of the hero so headline stays legible against the bars -->
-  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink via-ink/80 to-ink/10"></div>
+  <!-- mild vignette on top so headline stays readable -->
+  <div class="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-ink/80 via-transparent to-ink/40"></div>
 
   <div class="relative z-10 flex-1 flex items-center pt-24 pb-10 lg:pt-28 lg:pb-14">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-10 w-full">

@@ -1,0 +1,129 @@
+---
+interface Props {
+  /** Starting width of the radial gradient, in percent. */
+  startingGap?: number;
+  /** Whether the gradient slowly breathes in/out. */
+  breathing?: boolean;
+  /** Color list for gradient stops — must match gradientStops length. */
+  gradientColors?: string[];
+  /** Percent stops 0-100, one per color. */
+  gradientStops?: number[];
+  /** Breathing speed (higher = faster pulse). */
+  animationSpeed?: number;
+  /** +/- range of the breathing width around startingGap. */
+  breathingRange?: number;
+  /** Extra Y offset to stretch the radial vertically. */
+  topOffset?: number;
+  class?: string;
+}
+
+const {
+  startingGap = 125,
+  breathing = true,
+  gradientColors = [
+    "#0a0a0a",
+    "#15151a",
+    "#2a2a30",
+    "#3a3c15",
+    "#7a8a12",
+    "#242410",
+    "#0a0a0a",
+  ],
+  gradientStops = [35, 50, 60, 70, 80, 90, 100],
+  animationSpeed = 0.02,
+  breathingRange = 5,
+  topOffset = 0,
+  class: className = "",
+} = Astro.props;
+
+if (gradientColors.length !== gradientStops.length) {
+  throw new Error(
+    `RadialGradient: gradientColors (${gradientColors.length}) and gradientStops (${gradientStops.length}) must have the same length.`
+  );
+}
+
+const stopsString = gradientStops
+  .map((s, i) => `${gradientColors[i]} ${s}%`)
+  .join(", ");
+
+const initialGradient = `radial-gradient(${startingGap}% ${
+  startingGap + topOffset
+}% at 50% 20%, ${stopsString})`;
+---
+
+<div
+  class:list={[
+    "radial-gradient-bg absolute inset-0 z-0 overflow-hidden pointer-events-none",
+    className,
+  ]}
+  aria-hidden="true"
+>
+  <div
+    class="radial-gradient-inner absolute inset-0"
+    data-breathing={breathing ? "true" : "false"}
+    data-starting-gap={String(startingGap)}
+    data-breathing-range={String(breathingRange)}
+    data-animation-speed={String(animationSpeed)}
+    data-top-offset={String(topOffset)}
+    data-stops-string={stopsString}
+    style={`background: ${initialGradient};`}
+  >
+  </div>
+</div>
+
+<style is:global>
+  .radial-gradient-bg {
+    opacity: 0;
+    transform: scale(1.5);
+    animation: radial-bg-enter 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+  @keyframes radial-bg-enter {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .radial-gradient-bg {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const inners = document.querySelectorAll<HTMLElement>(".radial-gradient-inner");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  inners.forEach((el) => {
+    const breathing = el.dataset.breathing === "true";
+    if (!breathing || reduceMotion) return;
+
+    const startingGap = parseFloat(el.dataset.startingGap ?? "125");
+    const breathingRange = parseFloat(el.dataset.breathingRange ?? "5");
+    const animationSpeed = parseFloat(el.dataset.animationSpeed ?? "0.02");
+    const topOffset = parseFloat(el.dataset.topOffset ?? "0");
+    const stops = el.dataset.stopsString ?? "";
+
+    let width = startingGap;
+    let direction = 1;
+    let rafId = 0;
+
+    const tick = () => {
+      if (width >= startingGap + breathingRange) direction = -1;
+      if (width <= startingGap - breathingRange) direction = 1;
+      width += direction * animationSpeed;
+      el.style.background = `radial-gradient(${width}% ${
+        width + topOffset
+      }% at 50% 20%, ${stops})`;
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+
+    window.addEventListener("pagehide", () => cancelAnimationFrame(rafId), {
+      once: true,
+    });
+  });
+</script>
