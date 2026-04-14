@@ -1,5 +1,6 @@
 ---
 const nav = [
+  { label: "Start", href: "#top" },
   { label: "Co robimy", href: "#co-robimy" },
   { label: "Media", href: "#media" },
   { label: "Studio", href: "#studio" },
@@ -8,23 +9,204 @@ const nav = [
 ---
 
 <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-ink/60 border-b border-white/5">
-  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-    <a href="#top" class="group flex items-center gap-2 font-display text-bone text-xl tracking-tight">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 lg:h-20 flex items-center justify-between">
+    <a
+      href="#top"
+      class="menu-close-trigger group flex items-center gap-2 font-display text-bone text-xl tracking-tight"
+    >
       <span class="inline-block w-2 h-2 rounded-full bg-acid group-hover:scale-150 transition-transform"></span>
       <span class="font-semibold">CHAOS&nbsp;MEDIA</span>
       <sup class="text-acid text-xs">®</sup>
     </a>
-    <nav class="hidden md:flex items-center gap-8 text-sm uppercase tracking-[0.18em] text-bone/70">
-      {nav.map((item) => (
-        <a href={item.href} class="hover:text-acid transition-colors">{item.label}</a>
-      ))}
-    </nav>
-    <a
-      href="mailto:biuro@chaosmedia.pl"
-      class="hidden md:inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] border border-bone/20 px-4 py-2 hover:bg-acid hover:border-acid hover:text-ink transition-colors"
+
+    <button
+      id="menu-toggle"
+      type="button"
+      class="hamburger group flex items-center gap-3 text-bone hover:text-acid transition-colors"
+      aria-expanded="false"
+      aria-controls="fullscreen-menu"
+      aria-label="Otwórz menu"
     >
-      Napisz do nas
-      <span aria-hidden="true">→</span>
-    </a>
+      <span class="hidden sm:inline text-xs uppercase tracking-[0.32em] label-open">Menu</span>
+      <span class="hidden sm:inline text-xs uppercase tracking-[0.32em] label-close">Zamknij</span>
+      <span class="hamburger-icon relative w-8 h-6 shrink-0" aria-hidden="true">
+        <span class="bar absolute inset-x-0 h-[2px] bg-current"></span>
+        <span class="bar absolute inset-x-0 h-[2px] bg-current"></span>
+      </span>
+    </button>
   </div>
 </header>
+
+<!-- FULLSCREEN MENU OVERLAY -->
+<div
+  id="fullscreen-menu"
+  class="fullscreen-menu fixed inset-0 z-40 bg-ink flex flex-col"
+  aria-hidden="true"
+>
+  <!-- background bleed: big glow + faint vertical bars echoing hero -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-40 -left-40 w-[70vw] h-[70vw] rounded-full bg-acid/[0.05] blur-3xl"></div>
+    <div class="absolute bottom-0 right-0 w-[50vw] h-[60vh] bg-gradient-to-tl from-acid/[0.06] via-transparent to-transparent"></div>
+  </div>
+
+  <div class="relative flex-1 flex flex-col justify-between max-w-[1400px] mx-auto w-full px-6 lg:px-10 pt-28 lg:pt-32 pb-10 lg:pb-14">
+    <nav class="flex-1 flex flex-col justify-center">
+      <ul class="space-y-2 lg:space-y-3">
+        {nav.map((item, i) => (
+          <li class="menu-item" style={`--i:${i}`}>
+            <a
+              href={item.href}
+              class="menu-link group block relative"
+            >
+              <span class="absolute left-0 top-4 lg:top-7 text-xs lg:text-sm text-bone/30 tabular-nums tracking-[0.18em]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span class="menu-link-text pl-12 lg:pl-20 flex items-baseline gap-4 font-display font-semibold text-bone text-[clamp(3rem,11vw,11rem)] leading-[0.9] tracking-[-0.035em] transition-colors group-hover:text-acid">
+                {item.label}
+                <span class="hidden lg:inline text-acid text-base opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                  →
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <footer class="menu-footer grid md:grid-cols-3 gap-6 md:gap-10 pt-8 border-t border-white/10 text-sm">
+      <div>
+        <div class="text-[10px] uppercase tracking-[0.32em] text-bone/40 mb-2">Napisz do nas</div>
+        <a
+          href="mailto:biuro@chaosmedia.pl"
+          class="font-display font-semibold text-bone hover:text-acid transition-colors text-xl lg:text-2xl"
+        >
+          biuro@chaosmedia.pl
+        </a>
+      </div>
+      <div>
+        <div class="text-[10px] uppercase tracking-[0.32em] text-bone/40 mb-2">Biuro</div>
+        <div class="text-bone/75">Chaos Media Sp. z o.o.<br />Warszawa, Polska</div>
+      </div>
+      <div class="md:text-right">
+        <div class="text-[10px] uppercase tracking-[0.32em] text-bone/40 mb-2">Status</div>
+        <div class="text-bone/75">
+          <span class="inline-block w-2 h-2 rounded-full bg-acid align-middle mr-2 animate-pulse"></span>
+          Dostępni na kampanie
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<style is:global>
+  /* Hamburger → X animation */
+  .hamburger-icon .bar {
+    transition: transform 0.4s cubic-bezier(0.85, 0, 0.15, 1), top 0.2s ease 0.2s;
+  }
+  .hamburger-icon .bar:nth-child(1) { top: 8px; }
+  .hamburger-icon .bar:nth-child(2) { top: 16px; }
+
+  .hamburger[aria-expanded="true"] .hamburger-icon .bar {
+    top: 12px;
+    transition: top 0.2s ease, transform 0.4s cubic-bezier(0.85, 0, 0.15, 1) 0.2s;
+  }
+  .hamburger[aria-expanded="true"] .hamburger-icon .bar:nth-child(1) { transform: rotate(45deg); }
+  .hamburger[aria-expanded="true"] .hamburger-icon .bar:nth-child(2) { transform: rotate(-45deg); }
+
+  .hamburger .label-open { display: inline; }
+  .hamburger .label-close { display: none; }
+  .hamburger[aria-expanded="true"] .label-open { display: none; }
+  .hamburger[aria-expanded="true"] .label-close { display: inline; }
+  @media (max-width: 639px) {
+    .hamburger .label-open,
+    .hamburger .label-close { display: none !important; }
+  }
+
+  /* Fullscreen menu slide-down */
+  .fullscreen-menu {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.7s cubic-bezier(0.85, 0, 0.15, 1);
+    pointer-events: none;
+  }
+  .fullscreen-menu.is-open {
+    clip-path: inset(0 0 0 0);
+    pointer-events: auto;
+  }
+
+  /* Stagger reveal for menu items */
+  .menu-item {
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: 0s;
+  }
+  .fullscreen-menu.is-open .menu-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(0.1s + var(--i, 0) * 0.07s);
+  }
+
+  .menu-footer {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+  }
+  .fullscreen-menu.is-open .menu-footer {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Lock body scroll when menu open */
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fullscreen-menu,
+    .menu-item,
+    .menu-footer,
+    .hamburger-icon .bar { transition: none !important; }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("fullscreen-menu");
+  const body = document.body;
+
+  if (toggle && menu) {
+    const setState = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Zamknij menu" : "Otwórz menu");
+      menu.setAttribute("aria-hidden", String(!open));
+      menu.classList.toggle("is-open", open);
+      body.classList.toggle("menu-open", open);
+    };
+
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") === "true";
+      setState(!open);
+    });
+
+    // Close on any in-menu anchor click (so clicking Kontakt jumps + closes)
+    menu.querySelectorAll<HTMLAnchorElement>("a[href^='#'], a[href^='mailto:']").forEach((a) => {
+      a.addEventListener("click", () => setState(false));
+    });
+
+    // Clicking the logo while menu is open also closes it
+    document.querySelectorAll<HTMLAnchorElement>(".menu-close-trigger").forEach((a) => {
+      a.addEventListener("click", () => {
+        if (toggle.getAttribute("aria-expanded") === "true") setState(false);
+      });
+    });
+
+    // Close with Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setState(false);
+      }
+    });
+  }
+</script>

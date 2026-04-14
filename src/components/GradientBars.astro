@@ -9,8 +9,8 @@ interface Props {
 
 const {
   numBars = 11,
-  gradientFrom = "rgba(230, 255, 0, 0.22)",
-  gradientTo = "transparent",
+  gradientFrom = "rgba(230, 255, 0, 0.42)",
+  gradientTo = "rgba(230, 255, 0, 0)",
   animationDuration = 3,
   class: className = "",
 } = Astro.props;
@@ -22,35 +22,106 @@ const calcHeight = (i: number, total: number) => {
   return 55 + 45 * heightPercentage;
 };
 
+const VB = 1000;
+const barWidth = VB / numBars;
+
 const bars = Array.from({ length: numBars }, (_, i) => {
-  const h = calcHeight(i, numBars);
-  return { scale: +(h / 100).toFixed(4), delay: +(i * 0.12).toFixed(2) };
+  const h = calcHeight(i, numBars); // 55..100
+  const scale = h / 100; // 0.55..1
+  const yTall = +(VB - scale * VB).toFixed(2);
+  const yShort = +(VB - scale * 0.78 * VB).toFixed(2);
+  return {
+    x: +(i * barWidth).toFixed(3),
+    yTall,
+    yShort,
+    delay: +(i * 0.12).toFixed(2),
+  };
 });
+
+const gradientId = "cm-gradient-bar";
+const clipId = "cm-gradient-clip";
 ---
 
-<div class:list={["gradient-bars absolute inset-0 z-0 overflow-hidden pointer-events-none", className]} aria-hidden="true">
-  <div class="flex h-full w-full">
-    {bars.map((bar) => (
-      <div
-        class="bar flex-1 h-full will-change-transform"
-        style={`
-          background: linear-gradient(to top, ${gradientFrom}, ${gradientTo});
-          transform: scaleY(${bar.scale});
-          transform-origin: bottom;
-          animation: gradientBarPulse ${animationDuration}s ease-in-out ${bar.delay}s infinite alternate;
-          --initial-scale: ${bar.scale};
-        `}
-      />
-    ))}
-  </div>
-</div>
+<svg
+  class:list={[
+    "gradient-bars absolute inset-0 z-0 w-full h-full pointer-events-none",
+    className,
+  ]}
+  viewBox={`0 0 ${VB} ${VB}`}
+  preserveAspectRatio="none"
+  aria-hidden="true"
+>
+  <defs>
+    <linearGradient
+      id={gradientId}
+      gradientUnits="userSpaceOnUse"
+      x1="0"
+      y1="0"
+      x2="0"
+      y2={VB}
+    >
+      <stop offset="0%" stop-color={gradientTo} />
+      <stop offset="100%" stop-color={gradientFrom} />
+    </linearGradient>
+    <clipPath id={clipId}>
+      {bars.map((bar) => (
+        <rect x={bar.x} y={bar.yTall} width={barWidth + 0.5} height={VB}>
+          <animate
+            attributeName="y"
+            values={`${bar.yTall};${bar.yShort};${bar.yTall}`}
+            dur={`${animationDuration}s`}
+            begin={`${bar.delay}s`}
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          />
+        </rect>
+      ))}
+    </clipPath>
+  </defs>
+  <g clip-path={`url(#${clipId})`}>
+    <rect
+      x="0"
+      y="0"
+      width={VB}
+      height={VB}
+      fill={`url(#${gradientId})`}
+    />
+    {Array.from({ length: numBars - 1 }, (_, i) => {
+      const x = +((i + 1) * barWidth).toFixed(3);
+      return (
+        <line
+          x1={x}
+          y1="0"
+          x2={x}
+          y2={VB}
+          stroke="rgba(10, 10, 10, 0.55)"
+          stroke-width="1.5"
+          vector-effect="non-scaling-stroke"
+        />
+      );
+    })}
+  </g>
+</svg>
 
 <style is:global>
-  @keyframes gradientBarPulse {
-    0% { transform: scaleY(var(--initial-scale)); }
-    100% { transform: scaleY(calc(var(--initial-scale) * 0.78)); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .gradient-bars .bar { animation: none !important; }
+  .gradient-bars {
+    shape-rendering: optimizeSpeed;
   }
 </style>
+
+<script>
+  // Honour prefers-reduced-motion by pausing SMIL animations
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const apply = () => {
+    document.querySelectorAll<SVGSVGElement>(".gradient-bars").forEach((svg) => {
+      if (mq.matches) {
+        svg.pauseAnimations?.();
+      } else {
+        svg.unpauseAnimations?.();
+      }
+    });
+  };
+  apply();
+  mq.addEventListener("change", apply);
+</script>
