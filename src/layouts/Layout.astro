@@ -4,12 +4,85 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  /** Path relative to SITE_URL, e.g. "/" or "/studio/". Must end with a slash. */
+  path?: string;
 }
+
+const SITE_URL = "https://chaosmedia.pl";
 
 const {
   title = "Chaos Media — viralowe zasięgi w sporcie i mediach",
   description = "Tworzymy viralowe treści, które generują setki milionów wyświetleń. Łączymy media, sport i internet w jedną potężną machinę zasięgów.",
+  path = "/",
 } = Astro.props;
+
+const canonical = `${SITE_URL}${path}`;
+const ogImage = `${SITE_URL}/og.png`;
+
+// JSON-LD — Organization (based on KRS 0000910307 / aleo.com)
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Chaos Media Sp. z o.o.",
+  alternateName: "Chaos Media",
+  url: SITE_URL,
+  logo: `${SITE_URL}/favicon.svg`,
+  image: ogImage,
+  description:
+    "Agencja viralowa specjalizująca się w tworzeniu treści z milionowymi zasięgami w sporcie, MMA i mediach społecznościowych. Własne portale, studio produkcyjne i wydawnictwo.",
+  foundingLocation: "Olsztyn, Polska",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "ul. Marka Kotańskiego 1",
+    postalCode: "10-166",
+    addressLocality: "Olsztyn",
+    addressCountry: "PL",
+  },
+  taxID: "PL7393955945",
+  vatID: "PL7393955945",
+  identifier: [
+    { "@type": "PropertyValue", propertyID: "NIP", value: "7393955945" },
+    { "@type": "PropertyValue", propertyID: "REGON", value: "389393096" },
+    { "@type": "PropertyValue", propertyID: "KRS", value: "0000910307" },
+  ],
+  email: "biuro@chaosmedia.pl",
+  knowsAbout: [
+    "viral marketing",
+    "produkcja wideo",
+    "lokowanie produktów",
+    "marketing sportowy",
+    "content marketing",
+    "social media",
+    "MMA",
+    "KSW",
+    "studio produkcyjne",
+    "wydawnictwo",
+  ],
+  brand: [
+    { "@type": "Brand", name: "Fansportu.pl" },
+    { "@type": "Brand", name: "StrefaMMA.pl" },
+    { "@type": "Brand", name: "MyMMA.pl" },
+    { "@type": "Brand", name: "Pantofelek.pl" },
+    { "@type": "Brand", name: "Filmiki.tv" },
+    { "@type": "Brand", name: "TypowyKibic.pl" },
+    { "@type": "Brand", name: "NiewiarygodneMiejsca.pl" },
+    { "@type": "Brand", name: "WatchCode.net" },
+  ],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Chaos Media",
+  alternateName: "Chaos Media — agencja viralowa",
+  url: SITE_URL,
+  inLanguage: "pl-PL",
+  publisher: {
+    "@type": "Organization",
+    name: "Chaos Media Sp. z o.o.",
+    url: SITE_URL,
+  },
+};
 ---
 
 <!doctype html>
@@ -19,11 +92,35 @@ const {
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0a0a0a" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+
+    <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <title>{title}</title>
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Chaos Media" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Chaos Media — agencja viralowa. Tworzymy viralowe treści." />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content="Chaos Media — agencja viralowa. Tworzymy viralowe treści." />
+
+    <!-- JSON-LD Structured data -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(orgJsonLd)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(websiteJsonLd)} />
   </head>
   <body class="bg-ink text-bone">
     <slot />
