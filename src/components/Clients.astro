@@ -33,8 +33,9 @@ const loop = [...clients, ...clients];
                 src={c.logo}
                 alt={ghost ? "" : `Logo ${c.name}`}
                 aria-hidden={ghost ? "true" : undefined}
-                loading="lazy"
-                decoding="async"
+                loading="eager"
+                decoding="sync"
+                fetchpriority="high"
                 class="partner-logo h-10 lg:h-14 w-auto max-w-[180px] lg:max-w-[220px] object-contain"
               />
             ) : (
