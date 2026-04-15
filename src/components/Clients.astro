@@ -22,39 +22,133 @@ const loop = [...clients, ...clients];
     <div class="text-xs uppercase tracking-[0.18em] text-bone/40">{clients.length} marek · i więcej</div>
   </div>
 
-  <div class="relative overflow-hidden">
-    <div class="ticker flex items-center whitespace-nowrap will-change-transform">
-      {loop.map((c, i) => {
-        const ghost = i >= clients.length;
-        return (
-          <div class="flex items-center gap-12 lg:gap-16 pr-12 lg:pr-16 shrink-0">
-            {c.logo ? (
-              <img
-                src={c.logo}
-                alt={ghost ? "" : `Logo ${c.name}`}
-                aria-hidden={ghost ? "true" : undefined}
-                loading="eager"
-                decoding="sync"
-                fetchpriority="high"
-                class="partner-logo h-10 lg:h-14 w-auto max-w-[180px] lg:max-w-[220px] object-contain"
-              />
-            ) : (
-              <span
-                class="font-display font-bold text-bone/30 hover:text-acid transition-colors text-3xl lg:text-5xl tracking-tight"
-                aria-hidden={ghost ? "true" : undefined}
-              >
-                {c.name}
-              </span>
-            )}
-            <span class="text-acid/50 text-2xl lg:text-3xl shrink-0" aria-hidden="true">/</span>
-          </div>
-        );
-      })}
+  <div class="relative">
+    <div class="ticker-wrap" data-ticker-duration-desktop="6" data-ticker-duration-mobile="3">
+      <div class="ticker flex items-center whitespace-nowrap will-change-scroll">
+        {loop.map((c, i) => {
+          const ghost = i >= clients.length;
+          return (
+            <div class="flex items-center gap-12 lg:gap-16 pr-12 lg:pr-16 shrink-0">
+              {c.logo ? (
+                <img
+                  src={c.logo}
+                  alt={ghost ? "" : `Logo ${c.name}`}
+                  aria-hidden={ghost ? "true" : undefined}
+                  loading="eager"
+                  decoding="sync"
+                  fetchpriority="high"
+                  class="partner-logo h-10 lg:h-14 w-auto max-w-[180px] lg:max-w-[220px] object-contain"
+                />
+              ) : (
+                <span
+                  class="font-display font-bold text-bone/30 hover:text-acid transition-colors text-3xl lg:text-5xl tracking-tight"
+                  aria-hidden={ghost ? "true" : undefined}
+                >
+                  {c.name}
+                </span>
+              )}
+              <span class="text-acid/50 text-2xl lg:text-3xl shrink-0" aria-hidden="true">/</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
-    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-smoke to-transparent"></div>
-    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-smoke to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-smoke to-transparent z-10"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-smoke to-transparent z-10"></div>
   </div>
 </section>
+
+<style is:global>
+  .ticker-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ticker-wrap::-webkit-scrollbar {
+    display: none;
+  }
+  .ticker {
+    /* No CSS animation — a JS rAF loop scrolls the wrap and
+       a finger swipe on mobile just hijacks native scrollLeft. */
+    width: max-content;
+  }
+</style>
+
+<script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wraps = document.querySelectorAll<HTMLElement>(".ticker-wrap");
+
+  wraps.forEach((wrap) => {
+    if (reduceMotion) return;
+
+    const desktopDuration = parseFloat(wrap.dataset.tickerDurationDesktop ?? "6");
+    const mobileDuration = parseFloat(wrap.dataset.tickerDurationMobile ?? "3");
+
+    let touching = false;
+    let lastTime = performance.now();
+    let resumeAt = 0;
+    let rafId = 0;
+
+    const tick = (now: number) => {
+      const delta = now - lastTime;
+      lastTime = now;
+
+      const halfWidth = wrap.scrollWidth / 2;
+      if (halfWidth > 0) {
+        const isMobile = window.matchMedia("(max-width: 767px)").matches;
+        const duration = isMobile ? mobileDuration : desktopDuration;
+        const speedPxPerSec = halfWidth / duration;
+
+        if (!touching && now >= resumeAt) {
+          let next = wrap.scrollLeft + (speedPxPerSec * delta) / 1000;
+          wrap.scrollLeft = next;
+        }
+
+        if (wrap.scrollLeft >= halfWidth) {
+          wrap.scrollLeft -= halfWidth;
+        }
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const onTouchStart = () => {
+      touching = true;
+    };
+    const onTouchEnd = () => {
+      touching = false;
+      lastTime = performance.now();
+      // Short cooldown so iOS inertial scroll has room to settle
+      // before auto-advance kicks back in.
+      resumeAt = lastTime + 450;
+    };
+
+    wrap.addEventListener("touchstart", onTouchStart, { passive: true });
+    wrap.addEventListener("touchend", onTouchEnd, { passive: true });
+    wrap.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    // Pause also on mouse drag on desktop — nice-to-have
+    wrap.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse") onTouchStart();
+    });
+    wrap.addEventListener("pointerup", (e) => {
+      if (e.pointerType === "mouse") onTouchEnd();
+    });
+    wrap.addEventListener("pointerleave", (e) => {
+      if (e.pointerType === "mouse") onTouchEnd();
+    });
+
+    rafId = requestAnimationFrame(tick);
+
+    window.addEventListener(
+      "pagehide",
+      () => cancelAnimationFrame(rafId),
+      { once: true }
+    );
+  });
+</script>
 
 <style is:global>
   /* Raster partner logos (png/webp) forced to white silhouettes so they
