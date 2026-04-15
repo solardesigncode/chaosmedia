@@ -23,11 +23,11 @@ const loop = [...clients, ...clients];
   </div>
 
   <div class="relative overflow-hidden">
-    <div class="ticker flex items-center gap-12 lg:gap-16 whitespace-nowrap will-change-transform">
+    <div class="ticker flex items-center whitespace-nowrap will-change-transform">
       {loop.map((c, i) => {
         const ghost = i >= clients.length;
         return (
-          <div class="flex items-center gap-12 lg:gap-16 shrink-0">
+          <div class="flex items-center gap-12 lg:gap-16 pr-12 lg:pr-16 shrink-0">
             {c.logo ? (
               <img
                 src={c.logo}
