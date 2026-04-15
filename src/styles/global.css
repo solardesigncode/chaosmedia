@@ -117,11 +117,11 @@
   }
 
   .ticker {
-    animation: ticker 12s linear infinite;
+    animation: ticker 6s linear infinite;
   }
   @media (max-width: 767px) {
     .ticker {
-      animation-duration: 6s;
+      animation-duration: 3s;
     }
   }
   @keyframes ticker {
