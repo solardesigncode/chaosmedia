@@ -23,8 +23,12 @@ const loop = [...clients, ...clients];
   </div>
 
   <div class="relative">
-    <div class="ticker-wrap" data-ticker-duration-desktop="6" data-ticker-duration-mobile="3">
-      <div class="ticker flex items-center whitespace-nowrap will-change-scroll">
+    <div
+      class="ticker-viewport relative overflow-hidden touch-pan-y"
+      data-ticker-duration-desktop="6"
+      data-ticker-duration-mobile="3"
+    >
+      <div class="ticker-track flex items-center whitespace-nowrap w-max will-change-transform">
         {loop.map((c, i) => {
           const ghost = i >= clients.length;
           return (
@@ -58,86 +62,98 @@ const loop = [...clients, ...clients];
   </div>
 </section>
 
-<style is:global>
-  .ticker-wrap {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .ticker-wrap::-webkit-scrollbar {
-    display: none;
-  }
-  .ticker {
-    /* No CSS animation — a JS rAF loop scrolls the wrap and
-       a finger swipe on mobile just hijacks native scrollLeft. */
-    width: max-content;
-  }
-</style>
-
 <script>
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const wraps = document.querySelectorAll<HTMLElement>(".ticker-wrap");
+  const viewports = document.querySelectorAll<HTMLElement>(".ticker-viewport");
 
-  wraps.forEach((wrap) => {
-    if (reduceMotion) return;
+  viewports.forEach((viewport) => {
+    const track = viewport.querySelector<HTMLElement>(".ticker-track");
+    if (!track) return;
 
-    const desktopDuration = parseFloat(wrap.dataset.tickerDurationDesktop ?? "6");
-    const mobileDuration = parseFloat(wrap.dataset.tickerDurationMobile ?? "3");
+    const desktopDuration = parseFloat(viewport.dataset.tickerDurationDesktop ?? "6");
+    const mobileDuration = parseFloat(viewport.dataset.tickerDurationMobile ?? "3");
 
-    let touching = false;
+    let offset = 0;
+    let dragging = false;
+    let dragStartX = 0;
+    let offsetAtDragStart = 0;
     let lastTime = performance.now();
-    let resumeAt = 0;
     let rafId = 0;
+
+    const apply = () => {
+      track.style.transform = `translate3d(${offset}px, 0, 0)`;
+    };
+
+    if (reduceMotion) {
+      apply();
+      return;
+    }
 
     const tick = (now: number) => {
       const delta = now - lastTime;
       lastTime = now;
 
-      const halfWidth = wrap.scrollWidth / 2;
+      const halfWidth = track.scrollWidth / 2;
       if (halfWidth > 0) {
-        const isMobile = window.matchMedia("(max-width: 767px)").matches;
-        const duration = isMobile ? mobileDuration : desktopDuration;
-        const speedPxPerSec = halfWidth / duration;
-
-        if (!touching && now >= resumeAt) {
-          let next = wrap.scrollLeft + (speedPxPerSec * delta) / 1000;
-          wrap.scrollLeft = next;
+        if (!dragging) {
+          const isMobile = window.matchMedia("(max-width: 767px)").matches;
+          const duration = isMobile ? mobileDuration : desktopDuration;
+          const speedPxPerSec = halfWidth / duration;
+          offset -= (speedPxPerSec * delta) / 1000;
         }
 
-        if (wrap.scrollLeft >= halfWidth) {
-          wrap.scrollLeft -= halfWidth;
-        }
+        // Seamless wrap — keep offset inside (-halfWidth, 0]
+        while (offset <= -halfWidth) offset += halfWidth;
+        while (offset > 0) offset -= halfWidth;
       }
 
+      apply();
       rafId = requestAnimationFrame(tick);
     };
 
-    const onTouchStart = () => {
-      touching = true;
+    const pointerDown = (clientX: number) => {
+      dragging = true;
+      dragStartX = clientX;
+      offsetAtDragStart = offset;
     };
-    const onTouchEnd = () => {
-      touching = false;
+    const pointerMove = (clientX: number) => {
+      if (!dragging) return;
+      offset = offsetAtDragStart + (clientX - dragStartX);
+    };
+    const pointerUp = () => {
+      dragging = false;
       lastTime = performance.now();
-      // Short cooldown so iOS inertial scroll has room to settle
-      // before auto-advance kicks back in.
-      resumeAt = lastTime + 450;
     };
 
-    wrap.addEventListener("touchstart", onTouchStart, { passive: true });
-    wrap.addEventListener("touchend", onTouchEnd, { passive: true });
-    wrap.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    viewport.addEventListener(
+      "touchstart",
+      (e) => pointerDown(e.touches[0].clientX),
+      { passive: true }
+    );
+    viewport.addEventListener(
+      "touchmove",
+      (e) => pointerMove(e.touches[0].clientX),
+      { passive: true }
+    );
+    viewport.addEventListener("touchend", pointerUp, { passive: true });
+    viewport.addEventListener("touchcancel", pointerUp, { passive: true });
 
-    // Pause also on mouse drag on desktop — nice-to-have
-    wrap.addEventListener("pointerdown", (e) => {
-      if (e.pointerType === "mouse") onTouchStart();
+    // Mouse drag on desktop
+    viewport.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse") return;
+      pointerDown(e.clientX);
     });
-    wrap.addEventListener("pointerup", (e) => {
-      if (e.pointerType === "mouse") onTouchEnd();
+    viewport.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return;
+      pointerMove(e.clientX);
     });
-    wrap.addEventListener("pointerleave", (e) => {
-      if (e.pointerType === "mouse") onTouchEnd();
+    viewport.addEventListener("pointerup", (e) => {
+      if (e.pointerType !== "mouse") return;
+      pointerUp();
+    });
+    viewport.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse") return;
+      pointerUp();
     });
 
     rafId = requestAnimationFrame(tick);
